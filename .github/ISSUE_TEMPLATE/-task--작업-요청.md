@@ -1,9 +1,8 @@
 ---
 name: "[TASK] 작업 요청"
 about: Describe this issue template's purpose here.
-title: ''
-labels: ''
-assignees: ''
+title: "[TASK] "
+labels: task
 
 ---
 
