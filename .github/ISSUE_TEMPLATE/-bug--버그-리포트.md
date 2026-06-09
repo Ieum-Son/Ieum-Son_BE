@@ -1,9 +1,8 @@
 ---
 name: "[BUG] 버그 리포트"
 about: Create a report to help us improve
-title: ''
-labels: ''
-assignees: ''
+title: "[TASK] "
+labels: task
 
 ---
 
