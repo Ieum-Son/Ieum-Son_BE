@@ -11,4 +11,4 @@ reviews:  # 리뷰 설정
     enabled: true  # 자동 리뷰 기능 활성화
     drafts: false  # 초안에 대한 자동 리뷰 비활성화
 chat:  # 채팅 관련 설정
-  auto_reply: true  # 자동 응답 기능 활성화
+  auto_reply: true  # 자동 응답 기능x 활성화
