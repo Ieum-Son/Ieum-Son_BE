@@ -1,0 +1,75 @@
+spring:
+  application:
+    name: sign-language-app
+
+  # ?? DB ??
+  datasource:
+    url: jdbc:mysql://${DB_HOST}:${DB_PORT:3306}/${DB_NAME}?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
+    username: ${DB_USERNAME}
+    password: ${DB_PASSWORD}
+    driver-class-name: com.mysql.cj.jdbc.Driver
+    hikari:
+      maximum-pool-size: ${DB_POOL_SIZE:10}
+      minimum-idle: 5
+      idle-timeout: 30000
+      max-lifetime: 1800000
+
+  jpa:
+    hibernate:
+      ddl-auto: ${DDL_AUTO:validate}
+    properties:
+      hibernate:
+        format_sql: true
+        default_batch_fetch_size: 100
+    open-in-view: false
+
+  # ?? Redis ??
+  data:
+    redis:
+      host: ${REDIS_HOST:localhost}
+      port: ${REDIS_PORT:6379}
+      password: ${REDIS_PASSWORD:}
+
+  # ?? File Upload ??
+  servlet:
+    multipart:
+      max-file-size: ${MAX_FILE_SIZE:5MB}
+      max-request-size: ${MAX_REQUEST_SIZE:5MB}
+
+# ?? JWT ??
+jwt:
+  secret: ${JWT_SECRET}
+  access-token-expiry: ${ACCESS_TOKEN_EXPIRY:1800000}   # 30?
+  refresh-token-expiry: ${REFRESH_TOKEN_EXPIRY:604800000} # 7?
+
+# ?? FCM ??
+fcm:
+  credentials-path: ${FCM_CREDENTIALS_PATH:firebase-service-account.json}
+
+# ?? AI Server (FastAPI) ??
+ai:
+  server:
+    url: ${AI_SERVER_URL:http://localhost:8000}
+
+# ?? S3 (??? ???, ?? ??) ??
+cloud:
+  aws:
+    s3:
+      bucket: ${S3_BUCKET}
+    credentials:
+      access-key: ${AWS_ACCESS_KEY}
+      secret-key: ${AWS_SECRET_KEY}
+    region:
+      static: ${AWS_REGION:ap-northeast-2}
+
+# ?? Logging ??
+logging:
+  level:
+    root: INFO
+    org.gh7035.ieumson: ${LOG_LEVEL:DEBUG}
+    org.hibernate.SQL: ${SQL_LOG_LEVEL:DEBUG}
+    org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# ?? Server ??
+server:
+  port: ${SERVER_PORT:8080}
