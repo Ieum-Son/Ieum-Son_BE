@@ -1,17 +1,20 @@
 package org.gh7035.ieumson.domain.member.domain;
 
-import jakarta.persistence.Column;
-import jakarta.persistence.Entity;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.OneToOne;
+import jakarta.persistence.*;
+import lombok.*;
 import org.gh7035.ieumson.global.entity.BaseEntity;
+import org.hibernate.annotations.UpdateTimestamp;
 import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
 import java.util.Date;
 
 @Entity
-
+@Table(name = "member_settings")
+@Getter
+@Builder
+@NoArgsConstructor(access = AccessLevel.PROTECTED)
+@AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class MemberSettings extends BaseEntity {
 
     @OneToOne
@@ -21,19 +24,15 @@ public class MemberSettings extends BaseEntity {
     @Column(name = "dark_mode")
     private boolean darkMode = false;
 
-    @Column(name = "alram_enabled")
-    private boolean alramEnabled = true;
-
-//    @Column(name = "sound_volume")
-//    private int soundVolume;
+    @Column(name = "alarm_enabled")
+    private boolean alarmEnabled = true;
 
     @Column(name = "updated_at")
-    @LastModifiedDate
+    @UpdateTimestamp
     private LocalDateTime updatedAt;
 
     public void toggleDarkMode() { this.darkMode = !this.darkMode; }
 
-    public void toggleAlramEnabled() { this.alramEnabled = !this.alramEnabled; }
+    public void toggleAlramEnabled() { this.alarmEnabled = !this.alarmEnabled; }
 
-//    public void SoundVolume(int soundVolume) { this.soundVolume = soundVolume; }
 }

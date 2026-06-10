@@ -4,10 +4,11 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.gh7035.ieumson.domain.member.domain.enums.Role;
 import org.gh7035.ieumson.global.entity.BaseEntity;
+import org.hibernate.annotations.CreationTimestamp;
 import org.springframework.data.annotation.CreatedDate;
+import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "member")
@@ -17,7 +18,7 @@ import java.util.Date;
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
 public class Member extends BaseEntity {
 
-    @Column(name = "email", length = 255, nullable = false)
+    @Column(name = "email", length = 255, nullable = false, unique = true)
     private String email;
 
     @Column(name = "nickname", nullable = false)
@@ -33,12 +34,11 @@ public class Member extends BaseEntity {
     private int nuggetBalance = 0;
 
     @Column(name = "created_at")
-    @CreatedDate
+    @CreationTimestamp
     private LocalDateTime createdAt;
 
     @Enumerated(EnumType.STRING)
     @Column(nullable = false)
     private Role role;
-
 
 }
