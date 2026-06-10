@@ -5,8 +5,6 @@ import lombok.*;
 import org.gh7035.ieumson.domain.member.domain.enums.Role;
 import org.gh7035.ieumson.global.entity.BaseEntity;
 import org.hibernate.annotations.CreationTimestamp;
-import org.springframework.data.annotation.CreatedDate;
-import org.springframework.data.jpa.domain.support.AuditingEntityListener;
 
 import java.time.LocalDateTime;
 

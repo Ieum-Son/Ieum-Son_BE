@@ -4,10 +4,8 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.gh7035.ieumson.global.entity.BaseEntity;
 import org.hibernate.annotations.UpdateTimestamp;
-import org.springframework.data.annotation.LastModifiedDate;
 
 import java.time.LocalDateTime;
-import java.util.Date;
 
 @Entity
 @Table(name = "member_settings")
