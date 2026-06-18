@@ -6,7 +6,7 @@ import jakarta.servlet.http.Cookie;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.gh7035.ieumson.global.error.exception.ErrorCode;
-import org.gh7035.ieumson.global.error.exception.IeumException;
+import org.gh7035.ieumson.global.error.exception.TokenException;
 import org.gh7035.ieumson.global.security.auth.CustomUserDetailsService;
 import org.springframework.security.authentication.UsernamePasswordAuthenticationToken;
 import org.springframework.security.core.Authentication;
@@ -58,12 +58,22 @@ public class JwtTokenProvider {
     }
 
     public Authentication getAuthentication(String token) {
-        String email = getEmailFromToken(token);
+        Claims claims = getClaimsFromToken(token);
+        String tokenType = claims.get(CLAIM_TYPE).toString();
+        if (!ACCESS_TYPE.equals(tokenType)) {
+            throw new TokenException(ErrorCode.INVALID_TOKEN);
+        }
+        String email = claims.getSubject();
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
     public String resolveToken(HttpServletRequest request) {
+        String headerValue = request.getHeader(jwtProperties.getHeader());
+        String bearerPrefix = jwtProperties.getPrefix() + " ";
+        if (headerValue != null && headerValue.startsWith(bearerPrefix)) {
+            return headerValue.substring(bearerPrefix.length());
+        }
         Cookie[] cookies = request.getCookies();
         if (cookies == null) return null;
 
@@ -82,7 +92,7 @@ public class JwtTokenProvider {
         try {
             getClaimsFromToken(token);
             return true;
-        } catch (IeumException e) {
+        } catch (TokenException e) {
             return false;
         }
     }
@@ -95,9 +105,9 @@ public class JwtTokenProvider {
                     .parseSignedClaims(token)
                     .getPayload();
         } catch (ExpiredJwtException e) {
-            throw new IeumException(ErrorCode.TOKEN_EXPIRED);
+            throw new TokenException(ErrorCode.TOKEN_EXPIRED, e);
         } catch (JwtException e) {
-            throw new IeumException(ErrorCode.INVALID_TOKEN);
+            throw new TokenException(ErrorCode.INVALID_TOKEN, e);
         }
     }
 }

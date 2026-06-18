@@ -21,7 +21,7 @@ public class JwtProperties {
                          Long refreshTokenExpiry) {
         this.header = header;
         this.prefix = prefix;
-        this.secretKey = Base64.getEncoder().encodeToString(secretKey.getBytes());
+        this.secretKey = secretKey;
         this.accessTokenExpiry = accessTokenExpiry;
         this.refreshTokenExpiry = refreshTokenExpiry;
     }
