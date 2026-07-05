@@ -1,4 +1,4 @@
-package org.gh7035.ieumson.domain.auth.dto.request;
+package org.gh7035.ieumson.domain.auth.presentation.dto.request;
 
 import jakarta.validation.constraints.NotBlank;
 
