@@ -2,7 +2,7 @@ spring:
   application:
     name: sign-language-app
 
-  # ?? DB ??
+  # DB
   datasource:
     url: jdbc:mysql://${DB_HOST}:${DB_PORT:3306}/${DB_NAME}?useSSL=false&serverTimezone=Asia/Seoul&characterEncoding=UTF-8
     username: ${DB_USERNAME}
@@ -23,35 +23,45 @@ spring:
         default_batch_fetch_size: 100
     open-in-view: false
 
-  # ?? Redis ??
+  # Redis
   data:
     redis:
       host: ${REDIS_HOST:localhost}
       port: ${REDIS_PORT:6379}
       password: ${REDIS_PASSWORD:}
+      database: 0
+      connect-timeout: 3000ms
+      timeout: 3000ms
+      lettuce:
+        pool:
+          max-active: 20
+          max-idle: 10
+          min-idle: 2
 
-  # ?? File Upload ??
+  # File Upload
   servlet:
     multipart:
       max-file-size: ${MAX_FILE_SIZE:5MB}
       max-request-size: ${MAX_REQUEST_SIZE:5MB}
 
-# ?? JWT ??
+# JWT
 jwt:
-  secret: ${JWT_SECRET}
+  secret-key: ${JWT_SECRET}
   access-token-expiry: ${ACCESS_TOKEN_EXPIRY:1800000}   # 30?
   refresh-token-expiry: ${REFRESH_TOKEN_EXPIRY:604800000} # 7?
+  header: Authorization
+  prefix: Bearer
 
-# ?? FCM ??
+# FCM
 fcm:
   credentials-path: ${FCM_CREDENTIALS_PATH:firebase-service-account.json}
 
-# ?? AI Server (FastAPI) ??
+# AI Server (FastAPI)
 ai:
   server:
     url: ${AI_SERVER_URL:http://localhost:8000}
 
-# ?? S3 (??? ???, ?? ??) ??
+# S3
 cloud:
   aws:
     s3:
@@ -62,7 +72,7 @@ cloud:
     region:
       static: ${AWS_REGION:ap-northeast-2}
 
-# ?? Logging ??
+# Logging
 logging:
   level:
     root: INFO
@@ -70,6 +80,6 @@ logging:
     org.hibernate.SQL: ${SQL_LOG_LEVEL:DEBUG}
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
 
-# ?? Server ??
+# Server
 server:
   port: ${SERVER_PORT:8080}

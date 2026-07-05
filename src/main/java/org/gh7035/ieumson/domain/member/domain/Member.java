@@ -31,6 +31,9 @@ public class Member extends BaseEntity {
     @Column(name = "nugget_balance")
     private int nuggetBalance = 0;
 
+    @Column(name = "email_verified")
+    private boolean emailVerified = false;
+
     @Column(name = "created_at")
     @CreationTimestamp
     private LocalDateTime createdAt;
