@@ -65,6 +65,10 @@ public class JwtTokenProvider {
         }
         String email = claims.getSubject();
         UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+        if (!userDetails.isEnabled() || !userDetails.isAccountNonLocked()
+                || !userDetails.isAccountNonExpired() || !userDetails.isCredentialsNonExpired()) {
+            throw new TokenException(ErrorCode.INVALID_TOKEN);
+        }
         return new UsernamePasswordAuthenticationToken(userDetails, null, userDetails.getAuthorities());
     }
 
