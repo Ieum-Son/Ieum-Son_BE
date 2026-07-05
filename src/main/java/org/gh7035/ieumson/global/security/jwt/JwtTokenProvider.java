@@ -96,7 +96,7 @@ public class JwtTokenProvider {
         try {
             getClaimsFromToken(token);
             return true;
-        } catch (TokenException e) {
+        } catch (TokenException | IllegalArgumentException e) {
             return false;
         }
     }
