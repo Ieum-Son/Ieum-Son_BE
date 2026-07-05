@@ -1,26 +1,30 @@
 package org.gh7035.ieumson.domain.auth.domain;
 
-import jakarta.persistence.Id;
+import lombok.AllArgsConstructor;
 import lombok.Builder;
 import lombok.Getter;
+import lombok.NoArgsConstructor;
+import org.springframework.data.annotation.Id;
 import org.springframework.data.redis.core.RedisHash;
 import org.springframework.data.redis.core.TimeToLive;
-import org.springframework.data.redis.core.index.Indexed;
+
+import java.util.concurrent.TimeUnit;
 
 @Getter
 @Builder
-@RedisHash // RDB가 아닌 Redis에 저장하겠다
+@NoArgsConstructor
+@AllArgsConstructor
+@RedisHash("refresh_token")
 public class RefreshToken {
     @Id
     private String email;
 
-    @Indexed
     private String refreshToken;
 
-    @TimeToLive
+    @TimeToLive(unit = TimeUnit.MILLISECONDS)
     private Long expireTime;
 
-    public void rotationToken(String refreshToken, Long expireTime) {
+    public void rotateToken(String refreshToken, Long expireTime) {
         this.refreshToken = refreshToken;
         this.expireTime = expireTime;
     }
