@@ -38,10 +38,10 @@ public class JwtTokenProvider {
     public String generateAccessToken(String email) {
         Date now = new Date();
         return Jwts.builder()
-                .setSubject(email)
+                .subject(email)
                 .claim(CLAIM_TYPE, ACCESS_TYPE)
-                .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + jwtProperties.getAccessTokenExpiry()))
+                .issuedAt(now)
+                .expiration(new Date(now.getTime() + jwtProperties.getAccessTokenExpiry()))
                 .signWith(getSigningKey())
                 .compact();
     }
@@ -49,10 +49,10 @@ public class JwtTokenProvider {
     public String generateRefreshToken(String email) {
         Date now = new Date();
         return Jwts.builder()
-                .setSubject(email)
+                .subject(email)
                 .claim(CLAIM_TYPE, REFRESH_TYPE)
-                .setIssuedAt(now)
-                .setExpiration(new Date(now.getTime() + jwtProperties.getRefreshTokenExpiry()))
+                .issuedAt(now)
+                .expiration(new Date(now.getTime() + jwtProperties.getRefreshTokenExpiry()))
                 .signWith(getSigningKey())
                 .compact();
     }
