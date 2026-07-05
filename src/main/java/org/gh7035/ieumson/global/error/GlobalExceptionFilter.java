@@ -7,7 +7,6 @@ import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import lombok.extern.slf4j.Slf4j;
 import org.gh7035.ieumson.global.error.exception.IeumException;
-import org.gh7035.ieumson.global.error.exception.TokenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Component;
 import org.springframework.web.filter.OncePerRequestFilter;
@@ -27,8 +26,6 @@ public class GlobalExceptionFilter extends OncePerRequestFilter {
         try {
             filterChain.doFilter(request, response);
         } catch (IeumException e) {
-            writeErrorResponse(response, e.getErrorCode().getStatusCode(), e.getErrorCode().getErrorMessage());
-        } catch (TokenException e) {
             writeErrorResponse(response, e.getErrorCode().getStatusCode(), e.getErrorCode().getErrorMessage());
         } catch (Exception e) {
             log.error("[UnhandledFilterException] {}", e.getMessage(), e);

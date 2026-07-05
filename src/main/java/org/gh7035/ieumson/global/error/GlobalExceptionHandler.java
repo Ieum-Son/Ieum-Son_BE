@@ -2,7 +2,6 @@ package org.gh7035.ieumson.global.error;
 
 import lombok.extern.slf4j.Slf4j;
 import org.gh7035.ieumson.global.error.exception.IeumException;
-import org.gh7035.ieumson.global.error.exception.TokenException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.validation.FieldError;
@@ -16,13 +15,6 @@ public class GlobalExceptionHandler {
 
     @ExceptionHandler(IeumException.class)
     public ResponseEntity<ErrorResponse> handleIeumException(IeumException e) {
-        return ResponseEntity
-                .status(e.getErrorCode().getStatusCode())
-                .body(new ErrorResponse(e.getErrorCode().getErrorMessage()));
-    }
-
-    @ExceptionHandler(TokenException.class)
-    public ResponseEntity<ErrorResponse> handleTokenException(TokenException e) {
         return ResponseEntity
                 .status(e.getErrorCode().getStatusCode())
                 .body(new ErrorResponse(e.getErrorCode().getErrorMessage()));
