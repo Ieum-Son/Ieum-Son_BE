@@ -59,7 +59,7 @@ public class JwtTokenProvider {
 
     public Authentication getAuthentication(String token) {
         Claims claims = getClaimsFromToken(token);
-        String tokenType = claims.get(CLAIM_TYPE).toString();
+        String tokenType = claims.get(CLAIM_TYPE, String.class);
         if (!ACCESS_TYPE.equals(tokenType)) {
             throw new TokenException(ErrorCode.INVALID_TOKEN);
         }

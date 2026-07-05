@@ -28,7 +28,6 @@ public class SecurityConfig {
 
     private final JwtTokenProvider jwtTokenProvider;
     private final ObjectMapper objectMapper;
-    private final GlobalExceptionFilter globalExceptionFilter;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -67,7 +66,7 @@ public class SecurityConfig {
                         })
                 )
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
-                .addFilterBefore(globalExceptionFilter, JwtTokenFilter.class);
+                .addFilterBefore(new GlobalExceptionFilter(objectMapper), JwtTokenFilter.class);
 
         return http.build();
     }
