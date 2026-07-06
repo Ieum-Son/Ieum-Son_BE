@@ -47,8 +47,8 @@ spring:
 # JWT
 jwt:
   secret-key: ${JWT_SECRET}
-  access-token-expiry: ${ACCESS_TOKEN_EXPIRY:1800000}   # 30?
-  refresh-token-expiry: ${REFRESH_TOKEN_EXPIRY:604800000} # 7?
+  access-token-expiry: ${ACCESS_TOKEN_EXPIRY:1800000}   # 30분
+  refresh-token-expiry: ${REFRESH_TOKEN_EXPIRY:604800000} # 7일
   header: Authorization
   prefix: Bearer
 
@@ -60,17 +60,6 @@ fcm:
 ai:
   server:
     url: ${AI_SERVER_URL:http://localhost:8000}
-
-# S3
-cloud:
-  aws:
-    s3:
-      bucket: ${S3_BUCKET}
-    credentials:
-      access-key: ${AWS_ACCESS_KEY}
-      secret-key: ${AWS_SECRET_KEY}
-    region:
-      static: ${AWS_REGION:ap-northeast-2}
 
 # Logging
 logging:
