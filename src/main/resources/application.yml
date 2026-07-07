@@ -23,7 +23,6 @@ spring:
         default_batch_fetch_size: 100
     open-in-view: false
 
-  # Redis
   data:
     redis:
       host: ${REDIS_HOST:localhost}
@@ -38,17 +37,37 @@ spring:
           max-idle: 10
           min-idle: 2
 
-  # File Upload
   servlet:
     multipart:
       max-file-size: ${MAX_FILE_SIZE:5MB}
       max-request-size: ${MAX_REQUEST_SIZE:5MB}
 
+  cloud:
+    aws:
+      s3:
+        enabled: false
+
+  # Mail
+  mail:
+    host: ${SPRING_MAIL_HOST:smtp.gmail.com}
+    port: ${SPRING_MAIL_PORT:587}
+    username: ${SPRING_MAIL_USERNAME}
+    password: ${SPRING_MAIL_PASSWORD}
+    properties:
+      mail:
+        smtp:
+          auth: true
+          starttls:
+            enable: true
+          connectiontimeout: 5000
+          timeout: 5000
+          writetimeout: 5000
+
 # JWT
 jwt:
   secret-key: ${JWT_SECRET}
-  access-token-expiry: ${ACCESS_TOKEN_EXPIRY:1800000}   # 30?
-  refresh-token-expiry: ${REFRESH_TOKEN_EXPIRY:604800000} # 7?
+  access-token-expiry: ${ACCESS_TOKEN_EXPIRY:1800000}
+  refresh-token-expiry: ${REFRESH_TOKEN_EXPIRY:604800000}
   header: Authorization
   prefix: Bearer
 
@@ -60,17 +79,6 @@ fcm:
 ai:
   server:
     url: ${AI_SERVER_URL:http://localhost:8000}
-
-# S3
-cloud:
-  aws:
-    s3:
-      bucket: ${S3_BUCKET}
-    credentials:
-      access-key: ${AWS_ACCESS_KEY}
-      secret-key: ${AWS_SECRET_KEY}
-    region:
-      static: ${AWS_REGION:ap-northeast-2}
 
 # Logging
 logging:
