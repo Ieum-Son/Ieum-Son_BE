@@ -9,11 +9,11 @@ public record SignUpRequest(
         @Email(message = "이메일 형식이 올바르지 않습니다.")
         String email,
 
+        @NotBlank(message = "닉네임을 입력해주세요.")
+        String nickname,
+
         @NotBlank(message = "비밀번호를 입력해주세요.")
         @Size(min = 8, message = "비밀번호는 8자 이상이어야 합니다.")
-        String password,
-
-        @NotBlank(message = "닉네임을 입력해주세요.")
-        String nickname
+        String password
 ) {
 }
