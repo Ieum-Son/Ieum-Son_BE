@@ -2,10 +2,8 @@ package org.gh7035.ieumson.domain.auth.service;
 
 import lombok.RequiredArgsConstructor;
 import org.gh7035.ieumson.domain.auth.presentation.dto.request.LoginRequest;
-import org.gh7035.ieumson.domain.auth.presentation.dto.request.SignUpRequest;
 import org.gh7035.ieumson.domain.auth.presentation.dto.response.TokenResponse;
 import org.gh7035.ieumson.domain.member.domain.Member;
-import org.gh7035.ieumson.domain.member.domain.enums.Role;
 import org.gh7035.ieumson.domain.member.domain.repository.MemberRepository;
 import org.gh7035.ieumson.global.error.exception.ErrorCode;
 import org.gh7035.ieumson.global.error.exception.IeumException;
@@ -22,18 +20,6 @@ public class AuthService {
     private final TokenService tokenService;
     private final PasswordEncoder passwordEncoder;
 
-    public void signUp(SignUpRequest request) {
-        if (memberRepository.findByEmail(request.email()).isPresent()) {
-            throw new IeumException(ErrorCode.EMAIL_ALREADY_EXISTS);
-        }
-
-        memberRepository.save(Member.builder()
-                .email(request.email())
-                .password(passwordEncoder.encode(request.password()))
-                .nickname(request.nickname())
-                .role(Role.USER)
-                .build());
-    }
 
     @Transactional(readOnly = true)
     public TokenResponse login(LoginRequest request) {
