@@ -19,15 +19,14 @@ import org.springframework.transaction.annotation.Transactional;
 public class SignupService {
 
     private final MemberRepository memberRepository;
+    private final MemberValidator memberValidator;
     private final PasswordEncoder passwordEncoder;
     private final StringRedisTemplate stringRedisTemplate;
 
     private static final String VERIFIED_KEY_PREFIX = "auth:signup:verified:";
 
     public void signUp(SignUpRequest request) {
-        if (memberRepository.findByEmail(request.email()).isPresent()) {
-            throw new IeumException(ErrorCode.EMAIL_ALREADY_EXISTS);
-        }
+        memberValidator.validateEmailNotExists(request.email());
 
         String verifiedKey = VERIFIED_KEY_PREFIX + request.email();
         String verified = stringRedisTemplate.opsForValue().get(verifiedKey);
@@ -45,7 +44,7 @@ public class SignupService {
                     .role(Role.USER)
                     .build());
         } catch (DataIntegrityViolationException e) {
-            throw new IeumException(ErrorCode.EMAIL_ALREADY_EXISTS);
+            throw new IeumException(ErrorCode.EMAIL_ALREADY_EXISTS, e);
         }
 
         stringRedisTemplate.delete(verifiedKey);

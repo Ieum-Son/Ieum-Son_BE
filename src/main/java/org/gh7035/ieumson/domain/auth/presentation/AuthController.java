@@ -1,6 +1,7 @@
 package org.gh7035.ieumson.domain.auth.presentation;
 
 import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.gh7035.ieumson.domain.auth.presentation.dto.request.*;
 import org.gh7035.ieumson.domain.auth.presentation.dto.response.TokenResponse;
@@ -32,14 +33,14 @@ public class AuthController {
     }
 
     @PostMapping("/verify")
-    public ResponseEntity<Void> verifyEmail (@RequestBody @Valid VerifyRequest request) {
-        verifyEmailService.verifyEmail(request);
+    public ResponseEntity<Void> verifyEmail (@RequestBody @Valid VerifyRequest request, HttpServletRequest httpRequest) {
+        verifyEmailService.verifyEmail(request, extractClientIp(httpRequest));
         return ResponseEntity.status(HttpStatus.CREATED).build();
     }
 
     @PostMapping("/code")
-    public ResponseEntity<Void> verifyCode (@RequestBody @Valid VerifyCodeRequest request) {
-        verifyCodeService.verifyCode(request);
+    public ResponseEntity<Void> verifyCode (@RequestBody @Valid VerifyCodeRequest request, HttpServletRequest httpRequest) {
+        verifyCodeService.verifyCode(request, extractClientIp(httpRequest));
         return ResponseEntity.ok().build();
     }
 
@@ -59,5 +60,19 @@ public class AuthController {
     public ResponseEntity<Void> logout(@AuthenticationPrincipal CustomUserDetails userDetails) {
         tokenService.logout(userDetails.getUsername());
         return ResponseEntity.noContent().build();
+    }
+
+    private String extractClientIp(HttpServletRequest request) {
+        String forwarded = request.getHeader("X-Forwarded-For");
+        if (forwarded != null && !forwarded.isBlank()) {
+            return forwarded.split(",")[0].trim();
+        }
+
+        String realIp = request.getHeader("X-Real-IP");
+        if (realIp != null && !realIp.isBlank()) {
+            return realIp.trim();
+        }
+
+        return request.getRemoteAddr();
     }
 }

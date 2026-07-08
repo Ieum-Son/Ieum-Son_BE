@@ -26,7 +26,9 @@ public enum ErrorCode {
     // VERIFY
     VERIFY_CODE_EXPIRED(400, "인증 코드가 만료되었습니다."),
     VERIFY_CODE_MISMATCH(400, "인증 코드가 올바르지 않습니다."),
-    EMAIL_VERIFICATION_REQUIRED(403, "이메일 코드 인증이 필요합니다.");
+    EMAIL_VERIFICATION_REQUIRED(403, "이메일 코드 인증이 필요합니다."),
+    VERIFY_EMAIL_RESEND_TOO_FAST(429, "인증 메일은 잠시 후 다시 요청해주세요."),
+    AUTH_REQUEST_RATE_LIMITED(429, "요청이 너무 많습니다. 잠시 후 다시 시도해주세요.");
 
 
     private final int statusCode;
