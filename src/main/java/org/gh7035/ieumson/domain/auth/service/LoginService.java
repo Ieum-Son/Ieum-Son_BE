@@ -14,7 +14,7 @@ import org.springframework.transaction.annotation.Transactional;
 @Service
 @RequiredArgsConstructor
 @Transactional
-public class AuthService {
+public class LoginService {
 
     private final MemberRepository memberRepository;
     private final TokenService tokenService;
@@ -23,7 +23,7 @@ public class AuthService {
 
     @Transactional(readOnly = true)
     public TokenResponse login(LoginRequest request) {
-        Member member = memberRepository.findByEmail(request.email())
+        Member member = memberRepository.findByLoginId(request.loginId())
                 .orElseThrow(() -> new IeumException(ErrorCode.MEMBER_NOT_FOUND));
 
         if (!passwordEncoder.matches(request.password(), member.getPassword())) {

@@ -20,7 +20,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthService authService;
+    private final LoginService loginService;
     private final TokenService tokenService;
     private final SignupService signupService;
     private final VerifyEmailService verifyEmailService;
@@ -44,11 +44,9 @@ public class AuthController {
         return ResponseEntity.ok().build();
     }
 
-
-
     @PostMapping("/login")
     public ResponseEntity<TokenResponse> login(@RequestBody @Valid LoginRequest request) {
-        return ResponseEntity.ok(authService.login(request));
+        return ResponseEntity.ok(loginService.login(request));
     }
 
     @PostMapping("/refresh")

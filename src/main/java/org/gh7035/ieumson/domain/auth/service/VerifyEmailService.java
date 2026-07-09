@@ -1,5 +1,6 @@
 package org.gh7035.ieumson.domain.auth.service;
 
+import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.gh7035.ieumson.domain.auth.presentation.dto.request.VerifyRequest;
 import org.gh7035.ieumson.global.error.exception.ErrorCode;
@@ -43,10 +44,7 @@ public class VerifyEmailService {
     @Value("${app.signup.verify-rate-limit-window-seconds:300}")
     private long verifyRateLimitWindowSeconds;
 
-    public void verifyEmail(VerifyRequest request) {
-        verifyEmail(request, null);
-    }
-
+    @Transactional
     public void verifyEmail(VerifyRequest request, String clientIp) {
         memberValidator.validateEmailNotExists(request.email());
         applyRateLimit(signupVerifyRateEmailKey(request.email()), verifyMaxRequestsPerEmail, verifyRateLimitWindowSeconds);
