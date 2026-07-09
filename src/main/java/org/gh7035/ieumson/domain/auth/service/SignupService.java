@@ -12,6 +12,8 @@ import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+import org.springframework.transaction.support.TransactionSynchronization;
+import org.springframework.transaction.support.TransactionSynchronizationManager;
 
 @Service
 @RequiredArgsConstructor
@@ -36,15 +38,31 @@ public class SignupService {
         }
 
         try {
-            memberRepository.save(Member.builder()
+            memberRepository.saveAndFlush(Member.builder()
                     .email(request.email())
-                    .nickname(request.nickname())
+                    .name(request.name())
+                    .loginId(request.loginId())
                     .password(passwordEncoder.encode(request.password()))
                     .emailVerified(true)
                     .role(Role.USER)
                     .build());
         } catch (DataIntegrityViolationException e) {
             throw new IeumException(ErrorCode.EMAIL_ALREADY_EXISTS, e);
+        }
+
+        deleteVerifiedKeyAfterCommit(verifiedKey);
+    }
+
+    private void deleteVerifiedKeyAfterCommit(String verifiedKey) {
+        if (TransactionSynchronizationManager.isSynchronizationActive()
+                && TransactionSynchronizationManager.isActualTransactionActive()) {
+            TransactionSynchronizationManager.registerSynchronization(new TransactionSynchronization() {
+                @Override
+                public void afterCommit() {
+                    stringRedisTemplate.delete(verifiedKey);
+                }
+            });
+            return;
         }
 
         stringRedisTemplate.delete(verifiedKey);
