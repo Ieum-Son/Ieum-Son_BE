@@ -51,7 +51,5 @@ public class TokenService {
         return new TokenResponse(newAccessToken, newRefreshToken);
     }
 
-    public void logout(String email) {
-        refreshTokenRepository.deleteById(email);
-    }
+
 }

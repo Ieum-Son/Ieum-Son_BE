@@ -41,11 +41,8 @@ public class VerifyCodeService {
     @Value("${app.signup.code-rate-limit-window-seconds:300}")
     private long codeRateLimitWindowSeconds;
 
-    public void verifyCode(VerifyCodeRequest request) {
-        verifyCode(request, null);
-    }
 
-    public void verifyCode(VerifyCodeRequest request, String clientIp) {
+    public void execute(VerifyCodeRequest request, String clientIp) {
         String codeKey = CODE_KEY_PREFIX + request.email();
         String failureKey = CODE_FAILURE_KEY_PREFIX + request.email();
 

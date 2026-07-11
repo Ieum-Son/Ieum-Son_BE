@@ -45,7 +45,7 @@ public class VerifyEmailService {
     private long verifyRateLimitWindowSeconds;
 
     @Transactional
-    public void verifyEmail(VerifyRequest request, String clientIp) {
+    public void execute(VerifyRequest request, String clientIp) {
         memberValidator.validateEmailNotExists(request.email());
         applyRateLimit(signupVerifyRateEmailKey(request.email()), verifyMaxRequestsPerEmail, verifyRateLimitWindowSeconds);
         if (clientIp != null && !clientIp.isBlank()) {
@@ -72,7 +72,7 @@ public class VerifyEmailService {
             mailSender.sendHtmlTemplate(
                     request.email(),
                     "[이음손] 회원가입 인증코드",
-                    "templates/mailTemplate.html",
+                    "templates/mailCodeTemplate.html",
                     Map.of("code", code)
             );
         } catch (MailException | IllegalStateException e) {

@@ -22,7 +22,7 @@ public class LoginService {
 
 
     @Transactional(readOnly = true)
-    public TokenResponse login(LoginRequest request) {
+    public TokenResponse execute(LoginRequest request) {
         Member member = memberRepository.findByLoginId(request.loginId())
                 .orElseThrow(() -> new IeumException(ErrorCode.MEMBER_NOT_FOUND));
 

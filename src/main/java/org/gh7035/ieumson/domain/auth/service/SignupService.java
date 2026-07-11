@@ -27,7 +27,7 @@ public class SignupService {
 
     private static final String VERIFIED_KEY_PREFIX = "auth:signup:verified:";
 
-    public void signUp(SignUpRequest request) {
+    public void execute(SignUpRequest request) {
         memberValidator.validateEmailNotExists(request.email());
 
         String verifiedKey = VERIFIED_KEY_PREFIX + request.email();
