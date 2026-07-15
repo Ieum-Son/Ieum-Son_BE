@@ -11,7 +11,8 @@ public enum ErrorCode {
     // MEMBER
     MEMBER_NOT_FOUND(404, "해당 유저가 존재하지 않습니다."),
     EMAIL_ALREADY_EXISTS(409, "해당 이메일이 이미 사용중입니다."),
-    PASSWORD_MISMATCH(401, "비밀번호가 일치하지 않습니다."),
+    LOGIN_ID_ALREADY_EXISTS(409, "해당 로그인 ID가 이미 사용중입니다."),
+    LOGIN_FAILED(400, "로그인에 실패했습니다."),
     EMAIL_NOT_VERIFIED(403, "이메일 인증이 필요합니다."),
 
     // TOKEN

@@ -8,7 +8,6 @@ import org.gh7035.ieumson.domain.auth.presentation.dto.response.TokenResponse;
 import org.gh7035.ieumson.domain.auth.service.*;
 import org.gh7035.ieumson.global.security.auth.CustomUserDetails;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
 

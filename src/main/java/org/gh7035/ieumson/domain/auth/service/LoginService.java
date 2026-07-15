@@ -24,16 +24,16 @@ public class LoginService {
     @Transactional(readOnly = true)
     public TokenResponse execute(LoginRequest request) {
         Member member = memberRepository.findByLoginId(request.loginId())
-                .orElseThrow(() -> new IeumException(ErrorCode.MEMBER_NOT_FOUND));
+                .orElseThrow(() -> new IeumException(ErrorCode.LOGIN_FAILED));
 
         if (!passwordEncoder.matches(request.password(), member.getPassword())) {
-            throw new IeumException(ErrorCode.PASSWORD_MISMATCH);
+            throw new IeumException(ErrorCode.LOGIN_FAILED);
         }
 
         if (!member.isEmailVerified()) {
             throw new IeumException(ErrorCode.EMAIL_NOT_VERIFIED);
         }
 
-        return tokenService.issueTokens(member.getEmail());
+        return tokenService.issueTokens(member.getLoginId());
     }
 }
