@@ -45,4 +45,8 @@ public class Member extends BaseEntity {
     @Column(nullable = false)
     private Role role;
 
+    public void changePassword(String encodedPassword) {
+        this.password = encodedPassword;
+    }
+
 }

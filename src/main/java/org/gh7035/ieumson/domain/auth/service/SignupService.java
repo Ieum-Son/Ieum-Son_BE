@@ -29,6 +29,7 @@ public class SignupService {
 
     public void execute(SignUpRequest request) {
         memberValidator.validateEmailNotExists(request.email());
+        memberValidator.validateLoginIdNotExists(request.loginId());
 
         String verifiedKey = VERIFIED_KEY_PREFIX + request.email();
         String verified = stringRedisTemplate.opsForValue().get(verifiedKey);
