@@ -35,18 +35,19 @@ public class TokenService {
     public TokenResponse refresh(String refreshToken) {
         String loginId = jwtTokenProvider.getLoginIdFromRefreshToken(refreshToken);
 
-        RefreshToken stored = refreshTokenRepository.findById(loginId)
-                .orElseThrow(() -> new IeumException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
-
-        if (!stored.getRefreshToken().equals(refreshToken)) {
-            throw new TokenException(ErrorCode.INVALID_TOKEN);
-        }
-
         String newAccessToken = jwtTokenProvider.generateAccessToken(loginId);
         String newRefreshToken = jwtTokenProvider.generateRefreshToken(loginId);
+        long ttlMs = jwtProperties.getRefreshTokenExpiry();
 
-        stored.rotateToken(newRefreshToken, jwtProperties.getRefreshTokenExpiry());
-        refreshTokenRepository.save(stored);
+        int result = refreshTokenRepository.rotateIfMatches(
+                loginId, refreshToken, newRefreshToken, ttlMs);
+
+        if (result == -1) {
+            throw new IeumException(ErrorCode.REFRESH_TOKEN_NOT_FOUND);
+        }
+        if (result == 0) {
+            throw new TokenException(ErrorCode.INVALID_TOKEN);
+        }
 
         return new TokenResponse(newAccessToken, newRefreshToken);
     }

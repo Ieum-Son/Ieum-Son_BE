@@ -10,7 +10,7 @@ public class LogoutService {
 
     private final RefreshTokenRepository refreshTokenRepository;
 
-    public void execute(String email) {
-        refreshTokenRepository.deleteById(email);
+    public void execute(String loginId) {
+        refreshTokenRepository.deleteById(loginId);
     }
 }
