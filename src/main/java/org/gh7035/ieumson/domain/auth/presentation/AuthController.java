@@ -4,19 +4,18 @@ import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.gh7035.ieumson.domain.auth.presentation.dto.request.*;
+import org.gh7035.ieumson.domain.auth.presentation.dto.response.ProfileImageResponse;
 import org.gh7035.ieumson.domain.auth.presentation.dto.response.TokenResponse;
 import org.gh7035.ieumson.domain.auth.service.*;
 import org.gh7035.ieumson.global.security.auth.CustomUserDetails;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
@@ -25,39 +24,50 @@ public class AuthController {
     private final SignupService signupService;
     private final VerifyEmailService verifyEmailService;
     private final VerifyCodeService verifyCodeService;
+    private final LogoutService logoutService;
+    private final UploadProfileImageService uploadProfileImageService;
 
     @PostMapping("/signup")
-    public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
-        signupService.signUp(request);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
-    }
+    @ResponseStatus(HttpStatus.CREATED)
+    public void signUp(@RequestBody @Valid SignUpRequest request) { signupService.execute(request); }
 
     @PostMapping("/verify")
-    public ResponseEntity<Void> verifyEmail (@RequestBody @Valid VerifyRequest request, HttpServletRequest httpRequest) {
-        verifyEmailService.verifyEmail(request, extractClientIp(httpRequest));
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    @ResponseStatus(HttpStatus.OK)
+    public void verifyEmail (@RequestBody @Valid VerifyRequest request, HttpServletRequest httpRequest) {
+        verifyEmailService.execute(request, extractClientIp(httpRequest));
     }
 
     @PostMapping("/code")
-    public ResponseEntity<Void> verifyCode (@RequestBody @Valid VerifyCodeRequest request, HttpServletRequest httpRequest) {
-        verifyCodeService.verifyCode(request, extractClientIp(httpRequest));
-        return ResponseEntity.ok().build();
+    @ResponseStatus(HttpStatus.OK)
+    public void verifyCode (@RequestBody @Valid VerifyCodeRequest request, HttpServletRequest httpRequest) {
+        verifyCodeService.execute(request, extractClientIp(httpRequest));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody @Valid LoginRequest request) {
-        return ResponseEntity.ok(loginService.login(request));
+    @ResponseStatus(HttpStatus.OK)
+    public TokenResponse login(@RequestBody @Valid LoginRequest request, HttpServletRequest httpRequest) {
+        return loginService.execute(request, extractClientIp(httpRequest));
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<TokenResponse> refresh(@RequestBody @Valid RefreshRequest request) {
-        return ResponseEntity.ok(tokenService.refresh(request.refreshToken()));
+    @ResponseStatus(HttpStatus.OK)
+    public TokenResponse refresh(@RequestBody @Valid RefreshRequest request) {
+        return tokenService.refresh(request.refreshToken());
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        tokenService.logout(userDetails.getUsername());
-        return ResponseEntity.noContent().build();
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logout(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        logoutService.execute(userDetails.getUsername());
+    }
+
+    @PostMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public ProfileImageResponse uploadProfileImage(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam("image") MultipartFile image
+    ) {
+        return uploadProfileImageService.execute(userDetails.getUsername(), image);
     }
 
     private String extractClientIp(HttpServletRequest request) {

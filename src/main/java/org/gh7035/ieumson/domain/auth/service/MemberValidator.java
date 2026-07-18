@@ -13,8 +13,14 @@ public class MemberValidator {
     private final MemberRepository memberRepository;
 
     public void validateEmailNotExists(String email) {
-        if (memberRepository.findByEmail(email).isPresent()) {
+        if (memberRepository.existsByEmail(email)) {
             throw new IeumException(ErrorCode.EMAIL_ALREADY_EXISTS);
+        }
+    }
+
+    public void validateLoginIdNotExists(String loginId) {
+        if (memberRepository.existsByLoginId(loginId)) {
+            throw new IeumException(ErrorCode.LOGIN_ID_ALREADY_EXISTS);
         }
     }
 }

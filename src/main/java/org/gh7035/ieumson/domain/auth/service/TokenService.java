@@ -19,12 +19,12 @@ public class TokenService {
     private final JwtTokenProvider jwtTokenProvider;
     private final JwtProperties jwtProperties;
 
-    public TokenResponse issueTokens(String email) {
-        String accessToken = jwtTokenProvider.generateAccessToken(email);
-        String refreshToken = jwtTokenProvider.generateRefreshToken(email);
+    public TokenResponse issueTokens(String loginId) {
+        String accessToken = jwtTokenProvider.generateAccessToken(loginId);
+        String refreshToken = jwtTokenProvider.generateRefreshToken(loginId);
 
         refreshTokenRepository.save(RefreshToken.builder()
-                .email(email)
+                .loginId(loginId)
                 .refreshToken(refreshToken)
                 .expireTime(jwtProperties.getRefreshTokenExpiry())
                 .build());
@@ -33,25 +33,24 @@ public class TokenService {
     }
 
     public TokenResponse refresh(String refreshToken) {
-        String email = jwtTokenProvider.getEmailFromToken(refreshToken);
+        String loginId = jwtTokenProvider.getLoginIdFromRefreshToken(refreshToken);
 
-        RefreshToken stored = refreshTokenRepository.findById(email)
-                .orElseThrow(() -> new IeumException(ErrorCode.REFRESH_TOKEN_NOT_FOUND));
+        String newAccessToken = jwtTokenProvider.generateAccessToken(loginId);
+        String newRefreshToken = jwtTokenProvider.generateRefreshToken(loginId);
+        long ttlMs = jwtProperties.getRefreshTokenExpiry();
 
-        if (!stored.getRefreshToken().equals(refreshToken)) {
+        int result = refreshTokenRepository.rotateIfMatches(
+                loginId, refreshToken, newRefreshToken, ttlMs);
+
+        if (result == -1) {
+            throw new IeumException(ErrorCode.REFRESH_TOKEN_NOT_FOUND);
+        }
+        if (result == 0) {
             throw new TokenException(ErrorCode.INVALID_TOKEN);
         }
-
-        String newAccessToken = jwtTokenProvider.generateAccessToken(email);
-        String newRefreshToken = jwtTokenProvider.generateRefreshToken(email);
-
-        stored.rotateToken(newRefreshToken, jwtProperties.getRefreshTokenExpiry());
-        refreshTokenRepository.save(stored);
 
         return new TokenResponse(newAccessToken, newRefreshToken);
     }
 
-    public void logout(String email) {
-        refreshTokenRepository.deleteById(email);
-    }
+
 }

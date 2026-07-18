@@ -39,13 +39,8 @@ spring:
 
   servlet:
     multipart:
-      max-file-size: ${MAX_FILE_SIZE:5MB}
-      max-request-size: ${MAX_REQUEST_SIZE:5MB}
-
-  cloud:
-    aws:
-      s3:
-        enabled: false
+      max-file-size: ${MAX_FILE_SIZE:50MB}
+      max-request-size: ${MAX_REQUEST_SIZE:50MB}
 
   # Mail
   mail:
@@ -87,6 +82,17 @@ logging:
     org.gh7035.ieumson: ${LOG_LEVEL:DEBUG}
     org.hibernate.SQL: ${SQL_LOG_LEVEL:DEBUG}
     org.hibernate.type.descriptor.sql.BasicBinder: TRACE
+
+# App
+app:
+  login:
+    max-requests-per-ip: ${LOGIN_MAX_REQUESTS_PER_IP:20}
+    max-requests-per-login-id: ${LOGIN_MAX_REQUESTS_PER_LOGIN_ID:10}
+    rate-limit-window-seconds: ${LOGIN_RATE_LIMIT_WINDOW_SECONDS:300}
+  s3:
+    bucket: ${AWS_S3_BUCKET}
+    region: ${AWS_REGION:ap-northeast-2}
+    profile-image-prefix: ${AWS_S3_PROFILE_PREFIX:profiles}
 
 # Server
 server:
