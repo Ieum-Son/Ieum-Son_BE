@@ -4,12 +4,15 @@ import jakarta.validation.Valid;
 import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
 import org.gh7035.ieumson.domain.auth.presentation.dto.request.*;
+import org.gh7035.ieumson.domain.auth.presentation.dto.response.ProfileImageResponse;
 import org.gh7035.ieumson.domain.auth.presentation.dto.response.TokenResponse;
 import org.gh7035.ieumson.domain.auth.service.*;
 import org.gh7035.ieumson.global.security.auth.CustomUserDetails;
 import org.springframework.http.HttpStatus;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
 import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
 @RequestMapping("/api/auth")
@@ -22,6 +25,7 @@ public class AuthController {
     private final VerifyEmailService verifyEmailService;
     private final VerifyCodeService verifyCodeService;
     private final LogoutService logoutService;
+    private final UploadProfileImageService uploadProfileImageService;
 
     @PostMapping("/signup")
     @ResponseStatus(HttpStatus.CREATED)
@@ -41,8 +45,8 @@ public class AuthController {
 
     @PostMapping("/login")
     @ResponseStatus(HttpStatus.OK)
-    public TokenResponse login(@RequestBody @Valid LoginRequest request) {
-        return loginService.execute(request);
+    public TokenResponse login(@RequestBody @Valid LoginRequest request, HttpServletRequest httpRequest) {
+        return loginService.execute(request, extractClientIp(httpRequest));
     }
 
     @PostMapping("/refresh")
@@ -57,7 +61,14 @@ public class AuthController {
         logoutService.execute(userDetails.getUsername());
     }
 
-
+    @PostMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(HttpStatus.OK)
+    public ProfileImageResponse uploadProfileImage(
+            @AuthenticationPrincipal CustomUserDetails userDetails,
+            @RequestParam("image") MultipartFile image
+    ) {
+        return uploadProfileImageService.execute(userDetails.getUsername(), image);
+    }
 
     private String extractClientIp(HttpServletRequest request) {
         String forwarded = request.getHeader("X-Forwarded-For");

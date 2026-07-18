@@ -12,14 +12,15 @@ public enum ErrorCode {
     MEMBER_NOT_FOUND(404, "해당 유저가 존재하지 않습니다."),
     EMAIL_ALREADY_EXISTS(409, "해당 이메일이 이미 사용중입니다."),
     LOGIN_ID_ALREADY_EXISTS(409, "해당 로그인 ID가 이미 사용중입니다."),
+    DUPLICATE_ENTRY(409, "중복된 데이터가 존재합니다."),
     LOGIN_FAILED(400, "로그인에 실패했습니다."),
     EMAIL_NOT_VERIFIED(403, "이메일 인증이 필요합니다."),
 
     // TOKEN
     TOKEN_EXPIRED(401, "토큰이 만료되었습니다."),
-    INVALID_TOKEN(401, "유효 하지 않은 토큰입니다."),
+    INVALID_TOKEN(401, "유효하지 않은 토큰입니다."),
     REFRESH_TOKEN_NOT_FOUND(404, "해당 RefreshToken이 존재 하지 않습니다."),
-    INVALID_ROLE(401,"유효 하지 않은 역할입니다."),
+    INVALID_ROLE(401,"유효하지 않은 역할입니다."),
 
     // MAIL
     AUTH_MAIL_SEND_FAILED(502, "인증 메일 전송에 실패했습니다."),
@@ -29,7 +30,13 @@ public enum ErrorCode {
     VERIFY_CODE_MISMATCH(400, "인증 코드가 올바르지 않습니다."),
     EMAIL_VERIFICATION_REQUIRED(403, "이메일 코드 인증이 필요합니다."),
     VERIFY_EMAIL_RESEND_TOO_FAST(429, "인증 메일은 잠시 후 다시 요청해주세요."),
-    AUTH_REQUEST_RATE_LIMITED(429, "요청이 너무 많습니다. 잠시 후 다시 시도해주세요.");
+    AUTH_REQUEST_RATE_LIMITED(429, "요청이 너무 많습니다. 잠시 후 다시 시도해주세요."),
+
+    // PROFILE
+    PROFILE_IMAGE_REQUIRED(400, "프로필 이미지를 업로드해주세요."),
+    INVALID_PROFILE_IMAGE_TYPE(400, "지원하지 않는 이미지 형식입니다."),
+    PROFILE_IMAGE_SIZE_EXCEEDED(400, "파일 크기는 50MB 이하여야 합니다."),
+    PROFILE_IMAGE_UPLOAD_FAILED(502, "프로필 이미지 업로드에 실패했습니다.");
 
 
     private final int statusCode;
