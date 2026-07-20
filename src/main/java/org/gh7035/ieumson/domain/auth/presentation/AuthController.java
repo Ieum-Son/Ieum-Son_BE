@@ -25,11 +25,15 @@ public class AuthController {
     private final VerifyEmailService verifyEmailService;
     private final VerifyCodeService verifyCodeService;
     private final LogoutService logoutService;
-    private final UploadProfileImageService uploadProfileImageService;
 
-    @PostMapping("/signup")
+    @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
-    public void signUp(@RequestBody @Valid SignUpRequest request) { signupService.execute(request); }
+    public ProfileImageResponse signUp(
+            @Valid @ModelAttribute SignUpRequest request,
+            @RequestParam("image") MultipartFile image
+    ) {
+        return signupService.execute(request, image);
+    }
 
     @PostMapping("/verify")
     @ResponseStatus(HttpStatus.OK)
@@ -59,15 +63,6 @@ public class AuthController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(@AuthenticationPrincipal CustomUserDetails userDetails) {
         logoutService.execute(userDetails.getUsername());
-    }
-
-    @PostMapping(value = "/profile", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
-    @ResponseStatus(HttpStatus.OK)
-    public ProfileImageResponse uploadProfileImage(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestParam("image") MultipartFile image
-    ) {
-        return uploadProfileImageService.execute(userDetails.getUsername(), image);
     }
 
     private String extractClientIp(HttpServletRequest request) {
