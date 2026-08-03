@@ -15,6 +15,7 @@ public enum ErrorCode {
     DUPLICATE_ENTRY(409, "중복된 데이터가 존재합니다."),
     LOGIN_FAILED(400, "로그인에 실패했습니다."),
     EMAIL_NOT_VERIFIED(403, "이메일 인증이 필요합니다."),
+    PASSWORD_MISMATCH(400, "비밀번호가 일치하지 않습니다."),
 
     // TOKEN
     TOKEN_EXPIRED(401, "토큰이 만료되었습니다."),

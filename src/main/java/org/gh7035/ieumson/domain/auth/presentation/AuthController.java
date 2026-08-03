@@ -25,6 +25,7 @@ public class AuthController {
     private final VerifyEmailService verifyEmailService;
     private final VerifyCodeService verifyCodeService;
     private final LogoutService logoutService;
+    private final DeleteAccountService deleteAccountService;
 
     @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
     @ResponseStatus(HttpStatus.CREATED)
@@ -63,6 +64,13 @@ public class AuthController {
     @ResponseStatus(HttpStatus.NO_CONTENT)
     public void logout(@AuthenticationPrincipal CustomUserDetails userDetails) {
         logoutService.execute(userDetails.getUsername());
+    }
+
+    @DeleteMapping("/account")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAccount(@AuthenticationPrincipal CustomUserDetails userDetails,
+                              DeleteAccountRequest request) {
+        deleteAccountService.execute(userDetails, request);
     }
 
     private String extractClientIp(HttpServletRequest request) {
