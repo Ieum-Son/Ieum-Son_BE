@@ -1,49 +1,89 @@
 package org.gh7035.ieumson.domain.auth.presentation;
 
 import jakarta.validation.Valid;
+import jakarta.servlet.http.HttpServletRequest;
 import lombok.RequiredArgsConstructor;
-import org.gh7035.ieumson.domain.auth.presentation.dto.request.LoginRequest;
-import org.gh7035.ieumson.domain.auth.presentation.dto.request.RefreshRequest;
-import org.gh7035.ieumson.domain.auth.presentation.dto.request.SignUpRequest;
+import org.gh7035.ieumson.domain.auth.presentation.dto.request.*;
+import org.gh7035.ieumson.domain.auth.presentation.dto.response.ProfileImageResponse;
 import org.gh7035.ieumson.domain.auth.presentation.dto.response.TokenResponse;
-import org.gh7035.ieumson.domain.auth.service.AuthService;
-import org.gh7035.ieumson.domain.auth.service.TokenService;
+import org.gh7035.ieumson.domain.auth.service.*;
 import org.gh7035.ieumson.global.security.auth.CustomUserDetails;
 import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.http.MediaType;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
+import org.springframework.web.multipart.MultipartFile;
 
 @RestController
-@RequestMapping("/auth")
+@RequestMapping("/api/auth")
 @RequiredArgsConstructor
 public class AuthController {
 
-    private final AuthService authService;
+    private final LoginService loginService;
     private final TokenService tokenService;
+    private final SignupService signupService;
+    private final VerifyEmailService verifyEmailService;
+    private final VerifyCodeService verifyCodeService;
+    private final LogoutService logoutService;
+    private final DeleteAccountService deleteAccountService;
 
-    @PostMapping("/signup")
-    public ResponseEntity<Void> signUp(@RequestBody @Valid SignUpRequest request) {
-        authService.signUp(request);
-        return ResponseEntity.status(HttpStatus.CREATED).build();
+    @PostMapping(value = "/signup", consumes = MediaType.MULTIPART_FORM_DATA_VALUE)
+    @ResponseStatus(HttpStatus.CREATED)
+    public ProfileImageResponse signUp(
+            @Valid @ModelAttribute SignUpRequest request,
+            @RequestParam("image") MultipartFile image
+    ) {
+        return signupService.execute(request, image);
+    }
+
+    @PostMapping("/verify")
+    @ResponseStatus(HttpStatus.OK)
+    public void verifyEmail (@RequestBody @Valid VerifyRequest request, HttpServletRequest httpRequest) {
+        verifyEmailService.execute(request, extractClientIp(httpRequest));
+    }
+
+    @PostMapping("/code")
+    @ResponseStatus(HttpStatus.OK)
+    public void verifyCode (@RequestBody @Valid VerifyCodeRequest request, HttpServletRequest httpRequest) {
+        verifyCodeService.execute(request, extractClientIp(httpRequest));
     }
 
     @PostMapping("/login")
-    public ResponseEntity<TokenResponse> login(@RequestBody @Valid LoginRequest request) {
-        return ResponseEntity.ok(authService.login(request));
+    @ResponseStatus(HttpStatus.OK)
+    public TokenResponse login(@RequestBody @Valid LoginRequest request, HttpServletRequest httpRequest) {
+        return loginService.execute(request, extractClientIp(httpRequest));
     }
 
     @PostMapping("/refresh")
-    public ResponseEntity<TokenResponse> refresh(@RequestBody @Valid RefreshRequest request) {
-        return ResponseEntity.ok(tokenService.refresh(request.refreshToken()));
+    @ResponseStatus(HttpStatus.OK)
+    public TokenResponse refresh(@RequestBody @Valid RefreshRequest request) {
+        return tokenService.refresh(request.refreshToken());
     }
 
     @PostMapping("/logout")
-    public ResponseEntity<Void> logout(@AuthenticationPrincipal CustomUserDetails userDetails) {
-        tokenService.logout(userDetails.getUsername());
-        return ResponseEntity.noContent().build();
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void logout(@AuthenticationPrincipal CustomUserDetails userDetails) {
+        logoutService.execute(userDetails.getUsername());
+    }
+
+    @DeleteMapping("/account")
+    @ResponseStatus(HttpStatus.NO_CONTENT)
+    public void deleteAccount(@AuthenticationPrincipal CustomUserDetails userDetails,
+                              DeleteAccountRequest request) {
+        deleteAccountService.execute(userDetails, request);
+    }
+
+    private String extractClientIp(HttpServletRequest request) {
+        String forwarded = request.getHeader("X-Forwarded-For");
+        if (forwarded != null && !forwarded.isBlank()) {
+            return forwarded.split(",")[0].trim();
+        }
+
+        String realIp = request.getHeader("X-Real-IP");
+        if (realIp != null && !realIp.isBlank()) {
+            return realIp.trim();
+        }
+
+        return request.getRemoteAddr();
     }
 }
