@@ -7,7 +7,7 @@ import org.gh7035.ieumson.domain.progress.domain.enums.GoldTransactionType;
 import org.gh7035.ieumson.global.entity.BaseEntity;
 
 @Entity
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 @Getter
 @NoArgsConstructor(access = AccessLevel.PROTECTED)
 @AllArgsConstructor(access = AccessLevel.PRIVATE)
@@ -27,4 +27,19 @@ public class GoldTransaction extends BaseEntity {
 
     @Column(name = "description")
     private String description; // "8/10 학습 완료", "스트릭 회복"
+
+    /**
+     * amount는 항상 양수로 전달하고, 획득/사용에 따른 부호는 거래 유형이 결정한다.
+     */
+    public static GoldTransaction of(Member member, GoldTransactionType type, int amount, String description) {
+        if (amount <= 0) {
+            throw new IllegalArgumentException("거래 금액은 1 이상이어야 합니다: " + amount);
+        }
+        return GoldTransaction.builder()
+                .member(member)
+                .type(type)
+                .amount(type.isEarning() ? amount : -amount)
+                .description(description)
+                .build();
+    }
 }

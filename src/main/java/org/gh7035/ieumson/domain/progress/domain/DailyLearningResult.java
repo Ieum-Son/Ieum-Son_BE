@@ -8,7 +8,7 @@ import org.gh7035.ieumson.global.entity.BaseEntity;
 import java.time.LocalDate;
 
 @Entity
-@Builder
+@Builder(access = AccessLevel.PRIVATE)
 @Table(
         name = "daily_learning_result",
         uniqueConstraints = @UniqueConstraint(columnNames = {"member_id", "learned_date"}) //id + 날짜 조합은 unique
@@ -45,10 +45,17 @@ public class DailyLearningResult extends BaseEntity {
     }
 
     public void addWords(int count) {
-        this.wordsCompleted += count;
+        this.wordsCompleted += requirePositive(count);
     }
 
     public void addSentences(int count) {
-        this.sentencesCompleted += count;
+        this.sentencesCompleted += requirePositive(count);
+    }
+
+    private static int requirePositive(int count) {
+        if (count <= 0) {
+            throw new IllegalArgumentException("학습 완료 수는 1 이상씩만 누적할 수 있습니다: " + count);
+        }
+        return count;
     }
 }
