@@ -4,7 +4,6 @@ import jakarta.persistence.*;
 import lombok.*;
 import org.gh7035.ieumson.domain.member.domain.enums.Role;
 import org.gh7035.ieumson.global.entity.BaseEntity;
-import org.hibernate.annotations.CreationTimestamp;
 import org.hibernate.annotations.SQLRestriction;
 
 import java.time.LocalDateTime;
@@ -41,8 +40,6 @@ public class Member extends BaseEntity {
     @Column(name = "email_verified")
     private boolean emailVerified = false;
 
-
-
     @Builder.Default
     @Column(name = "deleted_at")
     LocalDateTime deletedAt = null;
@@ -61,6 +58,14 @@ public class Member extends BaseEntity {
 
     public void changeName(String name) {
         this.name = name;
+    }
+
+    public void addGold(int amount) {
+        this.nuggetBalance += amount;
+    }
+
+    public void deductGold(int amount) {
+        this.nuggetBalance -= amount;
     }
 
     public void leave() {
