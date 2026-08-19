@@ -33,16 +33,17 @@ public class Member extends BaseEntity {
     @Column(name = "profile_image_url")
     private String profileImageUrl;
 
+    @Builder.Default
     @Column(name = "nugget_balance")
     private int nuggetBalance = 0;
 
+    @Builder.Default
     @Column(name = "email_verified")
     private boolean emailVerified = false;
 
-    @Column(name = "created_at")
-    @CreationTimestamp
-    private LocalDateTime createdAt;
 
+
+    @Builder.Default
     @Column(name = "deleted_at")
     LocalDateTime deletedAt = null;
 
@@ -56,6 +57,10 @@ public class Member extends BaseEntity {
 
     public void updateProfileImageUrl(String profileImageUrl) {
         this.profileImageUrl = profileImageUrl;
+    }
+
+    public void changeName(String name) {
+        this.name = name;
     }
 
     public void leave() {

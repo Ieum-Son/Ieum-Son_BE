@@ -19,15 +19,13 @@ public class MemberSettings extends BaseEntity {
     @JoinColumn(name = "member_id", nullable = false)
     private Member member;
 
+    @Builder.Default
     @Column(name = "dark_mode")
     private boolean darkMode = false;
 
+    @Builder.Default
     @Column(name = "alarm_enabled")
     private boolean alarmEnabled = true;
-
-    @Column(name = "updated_at")
-    @UpdateTimestamp
-    private LocalDateTime updatedAt;
 
     public void toggleDarkMode() { this.darkMode = !this.darkMode; }
 

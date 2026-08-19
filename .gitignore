@@ -41,3 +41,6 @@ env
 .env.*
 *.env
 !.env.example
+
+### Local dev profile ###
+src/main/resources/application-local.yml
