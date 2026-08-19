@@ -43,4 +43,33 @@ public class WordLearning extends BaseEntity {
 
     @Column(name = "mastered_at")
     private LocalDateTime masteredAt; // 마스터한 시각 (복습 간격 계산용)
+
+    public static WordLearning start(Member member, Word word) {
+        return WordLearning.builder()
+                .member(member)
+                .word(word)
+                .bestAccuracy(0f)
+                .attemptCount(0)
+                .isMastered(false)
+                .lastPracticedAt(LocalDateTime.now())
+                .build();
+    }
+
+    /**
+     * @return 이번 시도로 새로 마스터했으면 true
+     */
+    public boolean recordPractice(float accuracy) {
+        boolean alreadyMastered = Boolean.TRUE.equals(this.isMastered);
+        this.attemptCount += 1;
+        this.lastPracticedAt = LocalDateTime.now();
+        if (this.bestAccuracy == null || accuracy > this.bestAccuracy) {
+            this.bestAccuracy = accuracy;
+        }
+        if (!alreadyMastered && accuracy >= 90f) {
+            this.isMastered = true;
+            this.masteredAt = this.lastPracticedAt;
+            return true;
+        }
+        return false;
+    }
 }

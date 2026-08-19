@@ -37,7 +37,17 @@ public enum ErrorCode {
     PROFILE_IMAGE_REQUIRED(400, "프로필 이미지를 업로드해주세요."),
     INVALID_PROFILE_IMAGE_TYPE(400, "지원하지 않는 이미지 형식입니다."),
     PROFILE_IMAGE_SIZE_EXCEEDED(400, "파일 크기는 50MB 이하여야 합니다."),
-    PROFILE_IMAGE_UPLOAD_FAILED(502, "프로필 이미지 업로드에 실패했습니다.");
+    PROFILE_IMAGE_UPLOAD_FAILED(502, "프로필 이미지 업로드에 실패했습니다."),
+
+    // STUDY
+    WORD_NOT_FOUND(404, "해당 단어가 존재하지 않습니다."),
+    SENTENCE_NOT_FOUND(404, "해당 문장이 존재하지 않습니다."),
+
+    // LEARNING
+    WORD_NOT_IN_TODAY_SESSION(400, "오늘 학습에 배정되지 않은 단어입니다."),
+    SENTENCE_NOT_IN_TODAY_SESSION(400, "오늘 학습에 배정되지 않은 문장입니다."),
+    LEARNING_NOT_COMPLETED(400, "오늘의 학습을 모두 완료해야 합니다."),
+    REVIEW_TIME_LIMIT_REQUIRED(400, "복습 제한 시간을 전달해주세요.");
 
 
     private final int statusCode;
