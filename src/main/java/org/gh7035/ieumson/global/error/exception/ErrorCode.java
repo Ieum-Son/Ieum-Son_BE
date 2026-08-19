@@ -47,7 +47,12 @@ public enum ErrorCode {
     WORD_NOT_IN_TODAY_SESSION(400, "오늘 학습에 배정되지 않은 단어입니다."),
     SENTENCE_NOT_IN_TODAY_SESSION(400, "오늘 학습에 배정되지 않은 문장입니다."),
     LEARNING_NOT_COMPLETED(400, "오늘의 학습을 모두 완료해야 합니다."),
-    REVIEW_TIME_LIMIT_REQUIRED(400, "복습 제한 시간을 전달해주세요.");
+    REVIEW_TIME_LIMIT_REQUIRED(400, "복습 제한 시간을 전달해주세요."),
+
+    // FAVORITE
+    WORD_NOT_MASTERED(400, "학습을 완료한 단어만 즐겨찾기할 수 있습니다."),
+    FAVORITE_ALREADY_EXISTS(409, "이미 즐겨찾기한 단어입니다."),
+    FAVORITE_NOT_FOUND(404, "즐겨찾기한 단어가 아닙니다.");
 
 
     private final int statusCode;

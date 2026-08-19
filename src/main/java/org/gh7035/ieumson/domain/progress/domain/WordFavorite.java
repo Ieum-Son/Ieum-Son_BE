@@ -24,4 +24,11 @@ public class WordFavorite extends BaseEntity {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "word_id", nullable = false)
     private Word word;
+
+    public static WordFavorite of(Member member, Word word) {
+        return WordFavorite.builder()
+                .member(member)
+                .word(word)
+                .build();
+    }
 }
