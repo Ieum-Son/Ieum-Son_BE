@@ -21,7 +21,4 @@ public class DeviceToken extends BaseEntity {
     @Column(name = "device_token", length = 500)
     private String fcm_token;
 
-    @CreationTimestamp
-    @Column(name = "created_at", nullable = false)
-    private LocalDateTime createdAt;
 }

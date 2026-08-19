@@ -19,12 +19,27 @@ import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.UsernamePasswordAuthenticationFilter;
+import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
+import org.springframework.security.web.util.matcher.OrRequestMatcher;
+import org.springframework.security.web.util.matcher.RequestMatcher;
 
+import java.util.Arrays;
 
 @Configuration
 @EnableWebSecurity
 @RequiredArgsConstructor
 public class SecurityConfig {
+
+    private static final String[] PUBLIC_ENDPOINTS = {
+            "/api/auth/verify",
+            "/api/auth/code",
+            "/api/auth/signup",
+            "/api/auth/login",
+            "/api/auth/refresh",
+            "/swagger-ui/**",
+            "/v3/api-docs/**",
+            "/swagger-ui.html"
+    };
 
     private final JwtTokenProvider jwtTokenProvider;
     private final ObjectMapper objectMapper;
@@ -41,12 +56,17 @@ public class SecurityConfig {
 
     @Bean
     public SecurityFilterChain securityFilterChain(HttpSecurity http) throws Exception {
+        RequestMatcher publicMatcher = publicRequestMatcher();
+
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .httpBasic(AbstractHttpConfigurer::disable)
+                .formLogin(AbstractHttpConfigurer::disable)
+                .logout(AbstractHttpConfigurer::disable)
                 .sessionManagement(session ->
                         session.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .authorizeHttpRequests(auth -> auth
-                        .requestMatchers("/auth/signup", "/auth/login", "/auth/refresh").permitAll()
+                        .requestMatchers(publicMatcher).permitAll()
                         .anyRequest().authenticated()
                 )
                 .exceptionHandling(ex -> ex
@@ -69,5 +89,14 @@ public class SecurityConfig {
                 .addFilterBefore(new GlobalExceptionFilter(objectMapper), JwtTokenFilter.class);
 
         return http.build();
+    }
+
+    private static RequestMatcher publicRequestMatcher() {
+        PathPatternRequestMatcher.Builder matcher = PathPatternRequestMatcher.withDefaults();
+        return new OrRequestMatcher(
+                Arrays.stream(PUBLIC_ENDPOINTS)
+                        .map(matcher::matcher)
+                        .toArray(RequestMatcher[]::new)
+        );
     }
 }
