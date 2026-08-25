@@ -51,7 +51,12 @@ public enum ErrorCode {
 
     // STREAK
     INSUFFICIENT_GOLD(400, "금조각이 부족합니다."),
-    STREAK_NOT_BROKEN(400, "복구할 스트릭이 없습니다.");
+    STREAK_NOT_BROKEN(400, "복구할 스트릭이 없습니다."),
+
+    // FAVORITE
+    WORD_NOT_MASTERED(400, "학습을 완료한 단어만 즐겨찾기할 수 있습니다."),
+    FAVORITE_ALREADY_EXISTS(409, "이미 즐겨찾기한 단어입니다."),
+    FAVORITE_NOT_FOUND(404, "즐겨찾기한 단어가 아닙니다.");
 
 
     private final int statusCode;
