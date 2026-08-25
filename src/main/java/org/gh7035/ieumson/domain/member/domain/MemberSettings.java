@@ -3,9 +3,6 @@ package org.gh7035.ieumson.domain.member.domain;
 import jakarta.persistence.*;
 import lombok.*;
 import org.gh7035.ieumson.global.entity.BaseEntity;
-import org.hibernate.annotations.UpdateTimestamp;
-
-import java.time.LocalDateTime;
 
 @Entity
 @Table(name = "member_settings")
@@ -30,5 +27,22 @@ public class MemberSettings extends BaseEntity {
     public void toggleDarkMode() { this.darkMode = !this.darkMode; }
 
     public void toggleAlramEnabled() { this.alarmEnabled = !this.alarmEnabled; }
+
+    public void update(Boolean darkMode, Boolean alarmEnabled) {
+        if (darkMode != null) {
+            this.darkMode = darkMode;
+        }
+        if (alarmEnabled != null) {
+            this.alarmEnabled = alarmEnabled;
+        }
+    }
+
+    public static MemberSettings of(Member member) {
+        return MemberSettings.builder()
+                .member(member)
+                .darkMode(false)
+                .alarmEnabled(true)
+                .build();
+    }
 
 }
