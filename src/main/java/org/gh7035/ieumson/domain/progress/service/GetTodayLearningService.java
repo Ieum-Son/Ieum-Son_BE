@@ -24,7 +24,6 @@ import org.springframework.transaction.annotation.Transactional;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
-import java.util.Comparator;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
@@ -160,10 +159,8 @@ public class GetTodayLearningService {
 
     private TodaySentenceResponse toSentenceResponse(Sentence sentence, boolean completed, Map<Long, Word> optionWords) {
         List<SentenceOptionResponse> options = sentence.getOptions().stream()
-                .map(id -> id instanceof Number number ? number.longValue() : Long.parseLong(String.valueOf(id)))
                 .map(optionWords::get)
                 .filter(Objects::nonNull)
-                .sorted(Comparator.comparing(Word::getId))
                 .map(word -> new SentenceOptionResponse(word.getId(), word.getWord(), word.getVideoLink()))
                 .toList();
         return new TodaySentenceResponse(sentence.getId(), sentence.getSentenceKor(), completed, options);

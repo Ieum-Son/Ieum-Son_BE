@@ -3,6 +3,7 @@ package org.gh7035.ieumson.domain.progress.presentation.dto.request;
 import jakarta.validation.constraints.DecimalMax;
 import jakarta.validation.constraints.DecimalMin;
 import jakarta.validation.constraints.NotNull;
+import jakarta.validation.constraints.PositiveOrZero;
 
 public record SubmitWordAttemptRequest(
         @NotNull(message = "정확도를 입력해주세요.")
@@ -12,6 +13,7 @@ public record SubmitWordAttemptRequest(
 
         String attemptId,
 
+        @PositiveOrZero(message = "경과 시간은 0 이상이어야 합니다.")
         Integer elapsedSeconds
 ) {
 }

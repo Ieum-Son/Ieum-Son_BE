@@ -67,7 +67,7 @@ public class TodaySessionService {
     private int resolveStreak(Member member, LocalDate today) {
         return dailyLearningResultRepository.findTopByMemberOrderByLearnedDateDesc(member)
                 .map(last -> {
-                    if (last.getLearnedDate().equals(today.minusDays(1))) {
+                    if (last.getLearnedDate().equals(today.minusDays(1)) && Boolean.TRUE.equals(last.getCompleted())) {
                         return last.getStreakCount() + 1;
                     }
                     if (last.getLearnedDate().equals(today)) {

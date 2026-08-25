@@ -65,7 +65,7 @@ public class WordLearning extends BaseEntity {
         if (this.bestAccuracy == null || accuracy > this.bestAccuracy) {
             this.bestAccuracy = accuracy;
         }
-        if (!alreadyMastered && accuracy >= 90f) {
+        if (!alreadyMastered && accuracy >= LearningPolicy.MASTERY_THRESHOLD) {
             this.isMastered = true;
             this.masteredAt = this.lastPracticedAt;
             return true;
