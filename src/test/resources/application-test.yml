@@ -10,9 +10,20 @@ spring:
   mail:
     username: test@example.com
     password: test-password
+  autoconfigure:
+    exclude:
+      - org.springframework.boot.data.redis.autoconfigure.DataRedisAutoConfiguration
+      - org.springframework.boot.data.redis.autoconfigure.DataRedisRepositoriesAutoConfiguration
 
 jwt:
   secret-key: test-secret-key-that-is-at-least-32-bytes-long
+  access-token-expiry: 1800000
+  refresh-token-expiry: 604800000
+  header: Authorization
+  prefix: Bearer
+
+ai:
+  ticket-secret: test-ticket-secret-that-is-at-least-32-bytes-long
 
 app:
   s3:
