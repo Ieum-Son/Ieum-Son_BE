@@ -17,7 +17,7 @@ import java.util.concurrent.TimeUnit;
 @RedisHash("refresh_token")
 public class RefreshToken {
     @Id
-    private String email;
+    private String loginId;
 
     private String refreshToken;
 

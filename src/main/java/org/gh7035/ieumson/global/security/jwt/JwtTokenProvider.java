@@ -35,10 +35,10 @@ public class JwtTokenProvider {
         );
     }
 
-    public String generateAccessToken(String email) {
+    public String generateAccessToken(String loginId) {
         Date now = new Date();
         return Jwts.builder()
-                .subject(email)
+                .subject(loginId)
                 .claim(CLAIM_TYPE, ACCESS_TYPE)
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + jwtProperties.getAccessTokenExpiry()))
@@ -46,10 +46,10 @@ public class JwtTokenProvider {
                 .compact();
     }
 
-    public String generateRefreshToken(String email) {
+    public String generateRefreshToken(String loginId) {
         Date now = new Date();
         return Jwts.builder()
-                .subject(email)
+                .subject(loginId)
                 .claim(CLAIM_TYPE, REFRESH_TYPE)
                 .issuedAt(now)
                 .expiration(new Date(now.getTime() + jwtProperties.getRefreshTokenExpiry()))
@@ -63,8 +63,8 @@ public class JwtTokenProvider {
         if (!ACCESS_TYPE.equals(tokenType)) {
             throw new TokenException(ErrorCode.INVALID_TOKEN);
         }
-        String email = claims.getSubject();
-        UserDetails userDetails = customUserDetailsService.loadUserByUsername(email);
+        String loginId = claims.getSubject();
+        UserDetails userDetails = customUserDetailsService.loadUserByUsername(loginId);
         if (!userDetails.isEnabled() || !userDetails.isAccountNonLocked()
                 || !userDetails.isAccountNonExpired() || !userDetails.isCredentialsNonExpired()) {
             throw new TokenException(ErrorCode.INVALID_TOKEN);
@@ -88,8 +88,16 @@ public class JwtTokenProvider {
                 .orElse(null);
     }
 
-    public String getEmailFromToken(String token) {
+    public String getLoginIdFromToken(String token) {
         return getClaimsFromToken(token).getSubject();
+    }
+
+    public String getLoginIdFromRefreshToken(String token) {
+        Claims claims = getClaimsFromToken(token);
+        if (!REFRESH_TYPE.equals(claims.get(CLAIM_TYPE, String.class))) {
+            throw new TokenException(ErrorCode.INVALID_TOKEN);
+        }
+        return claims.getSubject();
     }
 
     public boolean isValidateToken(String token) {

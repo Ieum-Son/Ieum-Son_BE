@@ -2,6 +2,7 @@ package org.gh7035.ieumson.global.error.exception;
 
 import lombok.AllArgsConstructor;
 import lombok.Getter;
+import org.springframework.http.HttpStatus;
 
 @Getter
 @AllArgsConstructor
@@ -10,14 +11,53 @@ public enum ErrorCode {
     // MEMBER
     MEMBER_NOT_FOUND(404, "해당 유저가 존재하지 않습니다."),
     EMAIL_ALREADY_EXISTS(409, "해당 이메일이 이미 사용중입니다."),
-    PASSWORD_MISMATCH(401, "비밀번호가 일치하지 않습니다."),
+    LOGIN_ID_ALREADY_EXISTS(409, "해당 로그인 ID가 이미 사용중입니다."),
+    DUPLICATE_ENTRY(409, "중복된 데이터가 존재합니다."),
+    LOGIN_FAILED(400, "로그인에 실패했습니다."),
     EMAIL_NOT_VERIFIED(403, "이메일 인증이 필요합니다."),
+    PASSWORD_MISMATCH(400, "비밀번호가 일치하지 않습니다."),
 
     // TOKEN
     TOKEN_EXPIRED(401, "토큰이 만료되었습니다."),
-    INVALID_TOKEN(401, "유효 하지 않은 토큰입니다."),
+    INVALID_TOKEN(401, "유효하지 않은 토큰입니다."),
     REFRESH_TOKEN_NOT_FOUND(404, "해당 RefreshToken이 존재 하지 않습니다."),
-    INVALID_ROLE(401,"유효 하지 않은 역할입니다.");
+    INVALID_ROLE(401,"유효하지 않은 역할입니다."),
+
+    // MAIL
+    AUTH_MAIL_SEND_FAILED(502, "인증 메일 전송에 실패했습니다."),
+
+    // VERIFY
+    VERIFY_CODE_EXPIRED(400, "인증 코드가 만료되었습니다."),
+    VERIFY_CODE_MISMATCH(400, "인증 코드가 올바르지 않습니다."),
+    EMAIL_VERIFICATION_REQUIRED(403, "이메일 코드 인증이 필요합니다."),
+    VERIFY_EMAIL_RESEND_TOO_FAST(429, "인증 메일은 잠시 후 다시 요청해주세요."),
+    AUTH_REQUEST_RATE_LIMITED(429, "요청이 너무 많습니다. 잠시 후 다시 시도해주세요."),
+
+    // PROFILE
+    PROFILE_IMAGE_REQUIRED(400, "프로필 이미지를 업로드해주세요."),
+    INVALID_PROFILE_IMAGE_TYPE(400, "지원하지 않는 이미지 형식입니다."),
+    PROFILE_IMAGE_SIZE_EXCEEDED(400, "파일 크기는 50MB 이하여야 합니다."),
+    PROFILE_IMAGE_UPLOAD_FAILED(502, "프로필 이미지 업로드에 실패했습니다."),
+
+    // STUDY
+    WORD_NOT_FOUND(404, "해당 단어가 존재하지 않습니다."),
+    SENTENCE_NOT_FOUND(404, "해당 문장이 존재하지 않습니다."),
+
+    // LEARNING
+    WORD_NOT_IN_TODAY_SESSION(400, "오늘 학습에 배정되지 않은 단어입니다."),
+    SENTENCE_NOT_IN_TODAY_SESSION(400, "오늘 학습에 배정되지 않은 문장입니다."),
+    LEARNING_NOT_COMPLETED(400, "오늘의 학습을 모두 완료해야 합니다."),
+    REVIEW_TIME_LIMIT_REQUIRED(400, "복습 제한 시간을 전달해주세요."),
+
+    // STREAK
+    INSUFFICIENT_GOLD(400, "금조각이 부족합니다."),
+    STREAK_NOT_BROKEN(400, "복구할 스트릭이 없습니다."),
+
+    // FAVORITE
+    WORD_NOT_MASTERED(400, "학습을 완료한 단어만 즐겨찾기할 수 있습니다."),
+    FAVORITE_ALREADY_EXISTS(409, "이미 즐겨찾기한 단어입니다."),
+    FAVORITE_NOT_FOUND(404, "즐겨찾기한 단어가 아닙니다.");
+
 
     private final int statusCode;
     private final String ErrorMessage;

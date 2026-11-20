@@ -1,6 +1,7 @@
 package org.gh7035.ieumson.global.error;
 
 import lombok.extern.slf4j.Slf4j;
+import org.gh7035.ieumson.global.error.exception.ErrorCode;
 import org.gh7035.ieumson.global.error.exception.IeumException;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
@@ -8,6 +9,7 @@ import org.springframework.validation.FieldError;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.ExceptionHandler;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
+import org.springframework.web.multipart.MaxUploadSizeExceededException;
 
 @Slf4j
 @RestControllerAdvice
@@ -29,6 +31,13 @@ public class GlobalExceptionHandler {
         return ResponseEntity
                 .status(HttpStatus.BAD_REQUEST)
                 .body(new ErrorResponse(message));
+    }
+
+    @ExceptionHandler(MaxUploadSizeExceededException.class)
+    public ResponseEntity<ErrorResponse> handleMaxUploadSizeExceededException(MaxUploadSizeExceededException e) {
+        return ResponseEntity
+                .status(ErrorCode.PROFILE_IMAGE_SIZE_EXCEEDED.getStatusCode())
+                .body(new ErrorResponse(ErrorCode.PROFILE_IMAGE_SIZE_EXCEEDED.getErrorMessage()));
     }
 
     @ExceptionHandler(Exception.class)
