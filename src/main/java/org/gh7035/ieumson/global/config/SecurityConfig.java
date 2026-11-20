@@ -1,12 +1,14 @@
-package org.gh7035.ieumson.global.security.config;
+package org.gh7035.ieumson.global.config;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import jakarta.servlet.http.HttpServletResponse;
 import lombok.RequiredArgsConstructor;
 import org.gh7035.ieumson.global.error.ErrorResponse;
 import org.gh7035.ieumson.global.error.GlobalExceptionFilter;
+import org.gh7035.ieumson.global.security.jwt.AttemptTokenFilter;
 import org.gh7035.ieumson.global.security.jwt.JwtTokenFilter;
 import org.gh7035.ieumson.global.security.jwt.JwtTokenProvider;
+import org.gh7035.ieumson.infrastructure.ticket.AttemptTokenVerifier;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.security.authentication.AuthenticationManager;
@@ -22,6 +24,7 @@ import org.springframework.security.web.authentication.UsernamePasswordAuthentic
 import org.springframework.security.web.servlet.util.matcher.PathPatternRequestMatcher;
 import org.springframework.security.web.util.matcher.OrRequestMatcher;
 import org.springframework.security.web.util.matcher.RequestMatcher;
+import org.springframework.web.cors.CorsConfigurationSource;
 
 import java.util.Arrays;
 
@@ -42,7 +45,9 @@ public class SecurityConfig {
     };
 
     private final JwtTokenProvider jwtTokenProvider;
+    private final AttemptTokenVerifier attemptTokenVerifier;
     private final ObjectMapper objectMapper;
+    private final CorsConfigurationSource corsConfigurationSource;
 
     @Bean
     public PasswordEncoder passwordEncoder() {
@@ -60,6 +65,7 @@ public class SecurityConfig {
 
         http
                 .csrf(AbstractHttpConfigurer::disable)
+                .cors(cors -> cors.configurationSource(corsConfigurationSource))
                 .httpBasic(AbstractHttpConfigurer::disable)
                 .formLogin(AbstractHttpConfigurer::disable)
                 .logout(AbstractHttpConfigurer::disable)
@@ -86,6 +92,7 @@ public class SecurityConfig {
                         })
                 )
                 .addFilterBefore(new JwtTokenFilter(jwtTokenProvider), UsernamePasswordAuthenticationFilter.class)
+                .addFilterAfter(new AttemptTokenFilter(jwtTokenProvider, attemptTokenVerifier), JwtTokenFilter.class)
                 .addFilterBefore(new GlobalExceptionFilter(objectMapper), JwtTokenFilter.class);
 
         return http.build();

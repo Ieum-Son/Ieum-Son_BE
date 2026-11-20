@@ -42,12 +42,13 @@ public enum ErrorCode {
     // STUDY
     WORD_NOT_FOUND(404, "해당 단어가 존재하지 않습니다."),
     SENTENCE_NOT_FOUND(404, "해당 문장이 존재하지 않습니다."),
+    LESSON_NOT_FOUND(404, "해당 레슨이 존재하지 않습니다."),
 
     // LEARNING
     WORD_NOT_IN_TODAY_SESSION(400, "오늘 학습에 배정되지 않은 단어입니다."),
     SENTENCE_NOT_IN_TODAY_SESSION(400, "오늘 학습에 배정되지 않은 문장입니다."),
     LEARNING_NOT_COMPLETED(400, "오늘의 학습을 모두 완료해야 합니다."),
-    REVIEW_TIME_LIMIT_REQUIRED(400, "복습 제한 시간을 전달해주세요."),
+    TODAY_SESSION_NOT_FOUND(404, "오늘 학습이 없습니다."),
 
     // STREAK
     INSUFFICIENT_GOLD(400, "금조각이 부족합니다."),

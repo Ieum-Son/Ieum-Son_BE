@@ -74,6 +74,8 @@ fcm:
 ai:
   server:
     url: ${AI_SERVER_URL:http://localhost:8000}
+  ticket-secret: ${TICKET_SECRET}
+  ticket-expiry: ${TICKET_EXPIRY:14400000}
 
 # Logging
 logging:
@@ -93,6 +95,9 @@ app:
     bucket: ${AWS_S3_BUCKET}
     region: ${AWS_REGION:ap-northeast-2}
     profile-image-prefix: ${AWS_S3_PROFILE_PREFIX:profiles}
+
+  cors:
+    allowed-origins: ${FRONT_URL:http://localhost:3000}
 
 # Server
 server:
