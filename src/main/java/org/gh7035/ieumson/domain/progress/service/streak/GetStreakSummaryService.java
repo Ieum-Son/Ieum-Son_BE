@@ -1,4 +1,4 @@
-package org.gh7035.ieumson.domain.progress.service;
+package org.gh7035.ieumson.domain.progress.service.streak;
 
 import lombok.RequiredArgsConstructor;
 import org.gh7035.ieumson.domain.member.domain.Member;
@@ -26,6 +26,7 @@ public class GetStreakSummaryService {
 
     private final CurrentMemberFinder currentMemberFinder;
     private final DailyLearningResultRepository dailyLearningResultRepository;
+    private final CurrentStreakFinder currentStreakFinder;
 
     public StreakSummaryResponse execute(CustomUserDetails userDetails) {
         Member member = currentMemberFinder.get(userDetails);
@@ -40,14 +41,14 @@ public class GetStreakSummaryService {
         List<StreakDayResponse> week = new ArrayList<>();
         for (LocalDate date = from; !date.isAfter(today); date = date.plusDays(1)) {
             DailyLearningResult day = byDate.get(date);
-            boolean learned = day != null && (day.getWordsCompleted() > 0 || Boolean.TRUE.equals(day.getCompleted()));
-            int intensity = day == null ? 0 : LearningPolicy.calendarIntensity(day.getWordsCompleted(), day.getSentencesCompleted());
-            week.add(new StreakDayResponse(date, learned, intensity));
+            int wordsCompleted = day == null ? 0 : day.getWordsCompleted();
+            boolean learned = day != null && (wordsCompleted > 0 || Boolean.TRUE.equals(day.getCompleted()));
+            week.add(new StreakDayResponse(date, learned, wordsCompleted));
         }
 
         DailyLearningResult last = dailyLearningResultRepository.findTopByMemberOrderByLearnedDateDesc(member)
                 .orElse(null);
-        int currentStreak = resolveCurrentStreak(last, today);
+        int currentStreak = currentStreakFinder.find(member);
         boolean recoverable = last != null && last.getLearnedDate().isBefore(today.minusDays(1));
 
         return new StreakSummaryResponse(
@@ -57,15 +58,5 @@ public class GetStreakSummaryService {
                 LearningPolicy.STREAK_RECOVERY_COST,
                 week
         );
-    }
-
-    private int resolveCurrentStreak(DailyLearningResult last, LocalDate today) {
-        if (last == null) {
-            return 0;
-        }
-        if (last.getLearnedDate().equals(today) || last.getLearnedDate().equals(today.minusDays(1))) {
-            return last.getStreakCount();
-        }
-        return 0;
     }
 }

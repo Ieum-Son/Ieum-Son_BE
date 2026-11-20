@@ -4,7 +4,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import lombok.RequiredArgsConstructor;
 import org.gh7035.ieumson.domain.progress.presentation.dto.response.RankingResponse;
-import org.gh7035.ieumson.domain.progress.service.GetRankingService;
+import org.gh7035.ieumson.domain.progress.service.ranking.GetRankingService;
 import org.gh7035.ieumson.global.security.auth.CustomUserDetails;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -19,7 +19,7 @@ import org.springframework.web.bind.annotation.RestController;
 @RestController
 @RequestMapping("/api/ranking")
 @RequiredArgsConstructor
-public class RankingController {
+public class RankingController{
 
     private final GetRankingService getRankingService;
 

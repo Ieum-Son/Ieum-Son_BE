@@ -13,7 +13,7 @@ public record StreakSummaryResponse(
     public record StreakDayResponse(
             LocalDate date,
             boolean learned,
-            int intensity
+            int wordsCompleted
     ) {
     }
 }
