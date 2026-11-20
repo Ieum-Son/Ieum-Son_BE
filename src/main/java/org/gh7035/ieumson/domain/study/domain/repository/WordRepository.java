@@ -21,4 +21,6 @@ public interface WordRepository extends JpaRepository<Word, Long> {
     List<Word> findByIdIn(Collection<Long> ids);
 
     List<Word> findByLessonIn(Collection<Lesson> lessons);
+
+    List<Word> findByLessonIdOrderByIdAsc(Long lessonId);
 }
