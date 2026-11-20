@@ -1,4 +1,4 @@
-package org.gh7035.ieumson.domain.progress.service;
+package org.gh7035.ieumson.domain.study.service;
 
 import lombok.RequiredArgsConstructor;
 import org.gh7035.ieumson.domain.member.domain.Member;
@@ -6,19 +6,23 @@ import org.gh7035.ieumson.domain.member.service.CurrentMemberFinder;
 import org.gh7035.ieumson.domain.progress.domain.DailyLearningResult;
 import org.gh7035.ieumson.domain.progress.domain.LearningPolicy;
 import org.gh7035.ieumson.domain.progress.domain.WordLearning;
+import org.gh7035.ieumson.domain.progress.domain.repository.DailyLearningResultRepository;
 import org.gh7035.ieumson.domain.progress.domain.repository.WordLearningRepository;
-import org.gh7035.ieumson.domain.progress.presentation.dto.response.TodayLearningResponse;
-import org.gh7035.ieumson.domain.progress.presentation.dto.response.TodayLearningResponse.LearningStep;
-import org.gh7035.ieumson.domain.progress.presentation.dto.response.TodayLearningResponse.SentenceOptionResponse;
-import org.gh7035.ieumson.domain.progress.presentation.dto.response.TodayLearningResponse.TodayProgressResponse;
-import org.gh7035.ieumson.domain.progress.presentation.dto.response.TodayLearningResponse.TodayReviewResponse;
-import org.gh7035.ieumson.domain.progress.presentation.dto.response.TodayLearningResponse.TodaySentenceResponse;
-import org.gh7035.ieumson.domain.progress.presentation.dto.response.TodayLearningResponse.TodayWordResponse;
+import org.gh7035.ieumson.domain.progress.service.streak.CurrentStreakFinder;
+import org.gh7035.ieumson.domain.study.presentation.dto.response.TodayLearningResponse;
+import org.gh7035.ieumson.domain.study.presentation.dto.response.TodayLearningResponse.LearningStep;
+import org.gh7035.ieumson.domain.study.presentation.dto.response.TodayLearningResponse.SentenceOptionResponse;
+import org.gh7035.ieumson.domain.study.presentation.dto.response.TodayLearningResponse.TodayProgressResponse;
+import org.gh7035.ieumson.domain.study.presentation.dto.response.TodayLearningResponse.TodayReviewResponse;
+import org.gh7035.ieumson.domain.study.presentation.dto.response.TodayLearningResponse.TodaySentenceResponse;
+import org.gh7035.ieumson.domain.study.presentation.dto.response.TodayLearningResponse.TodayWordResponse;
 import org.gh7035.ieumson.domain.study.domain.Sentence;
 import org.gh7035.ieumson.domain.study.domain.Word;
 import org.gh7035.ieumson.domain.study.domain.repository.SentenceRepository;
 import org.gh7035.ieumson.domain.study.domain.repository.WordRepository;
 import org.gh7035.ieumson.global.security.auth.CustomUserDetails;
+import org.gh7035.ieumson.infrastructure.ticket.DetectTicketIssuer;
+import org.gh7035.ieumson.infrastructure.ticket.DetectTicketIssuer.IssuedTicket;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
@@ -40,11 +44,15 @@ public class GetTodayLearningService {
     private final WordRepository wordRepository;
     private final SentenceRepository sentenceRepository;
     private final WordLearningRepository wordLearningRepository;
+    private final DailyLearningResultRepository dailyLearningResultRepository;
+    private final DetectTicketIssuer detectTicketIssuer;
+    private final CurrentStreakFinder currentStreakFinder;
 
     @Transactional
     public TodayLearningResponse execute(CustomUserDetails userDetails) {
         Member member = currentMemberFinder.get(userDetails);
-        DailyLearningResult today = todaySessionService.getOrCreate(member);
+        DailyLearningResult today = todaySessionService.findToday(member)
+                .orElseGet(() -> todaySessionService.createToday(member));
 
         Map<Long, Word> words = indexWords(today.assignedWordIds(), today.assignedReviewWordIds());
         Map<Long, WordLearning> learnings = indexLearnings(member, words.keySet());
@@ -76,9 +84,23 @@ public class GetTodayLearningService {
                 reviewResponses.size()
         );
 
+        List<Word> assignedWords = today.assignedWordIds().stream()
+                .map(words::get)
+                .filter(Objects::nonNull)
+                .toList();
+        List<Word> assignedReviews = today.assignedReviewWordIds().stream()
+                .map(words::get)
+                .filter(Objects::nonNull)
+                .toList();
+        IssuedTicket ticket = detectTicketIssuer.issue(today, assignedWords, assignedReviews);
+
         return new TodayLearningResponse(
                 today.getLearnedDate(),
-                today.getStreakCount(),
+                today.getId(),
+                ticket.token(),
+                ticket.expiresAt(),
+                currentStreakFinder.find(member),
+                dailyLearningResultRepository.countCompletedByMember(member),
                 Boolean.TRUE.equals(today.getCompleted()),
                 Boolean.TRUE.equals(today.getGoldAwarded()),
                 resolveStep(today, wordResponses),

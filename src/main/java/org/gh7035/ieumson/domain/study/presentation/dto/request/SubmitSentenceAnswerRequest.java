@@ -1,4 +1,4 @@
-package org.gh7035.ieumson.domain.progress.presentation.dto.request;
+package org.gh7035.ieumson.domain.study.presentation.dto.request;
 
 import jakarta.validation.constraints.NotNull;
 
