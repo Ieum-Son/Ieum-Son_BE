@@ -171,6 +171,13 @@ public class DailyLearningResult extends BaseEntity {
         this.streakCount = streakCount;
     }
 
+    public void confirmStreak(int streakCount) {
+        if (this.streakCount != null && this.streakCount > 0) {
+            return;
+        }
+        this.streakCount = streakCount;
+    }
+
     private static int requirePositive(int count) {
         if (count <= 0) {
             throw new IllegalArgumentException("학습 완료 수는 1 이상씩만 누적할 수 있습니다: " + count);

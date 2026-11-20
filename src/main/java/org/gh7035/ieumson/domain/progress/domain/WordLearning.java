@@ -72,4 +72,14 @@ public class WordLearning extends BaseEntity {
         }
         return false;
     }
+
+    public boolean markPassed() {
+        this.lastPracticedAt = LocalDateTime.now();
+        if (Boolean.TRUE.equals(this.isMastered)) {
+            return false;
+        }
+        this.isMastered = true;
+        this.masteredAt = this.lastPracticedAt;
+        return true;
+    }
 }

@@ -1,4 +1,4 @@
-package org.gh7035.ieumson.domain.progress.service;
+package org.gh7035.ieumson.domain.study.service;
 
 import lombok.RequiredArgsConstructor;
 import org.gh7035.ieumson.domain.member.domain.Member;
@@ -7,13 +7,16 @@ import org.gh7035.ieumson.domain.progress.domain.DailyLearningResult;
 import org.gh7035.ieumson.domain.progress.domain.GoldTransaction;
 import org.gh7035.ieumson.domain.progress.domain.LearningPolicy;
 import org.gh7035.ieumson.domain.progress.domain.enums.GoldTransactionType;
+import org.gh7035.ieumson.domain.progress.domain.repository.DailyLearningResultRepository;
 import org.gh7035.ieumson.domain.progress.domain.repository.GoldTransactionRepository;
-import org.gh7035.ieumson.domain.progress.presentation.dto.response.CompleteLearningResponse;
+import org.gh7035.ieumson.domain.study.presentation.dto.response.CompleteLearningResponse;
 import org.gh7035.ieumson.global.error.exception.ErrorCode;
 import org.gh7035.ieumson.global.error.exception.IeumException;
 import org.gh7035.ieumson.global.security.auth.CustomUserDetails;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDate;
 
 @Service
 @RequiredArgsConstructor
@@ -22,21 +25,27 @@ public class CompleteLearningService {
 
     private final CurrentMemberFinder currentMemberFinder;
     private final TodaySessionService todaySessionService;
+    private final DailyLearningResultRepository dailyLearningResultRepository;
     private final GoldTransactionRepository goldTransactionRepository;
 
     public CompleteLearningResponse execute(CustomUserDetails userDetails) {
         Member member = currentMemberFinder.get(userDetails);
-        DailyLearningResult today = todaySessionService.getOrCreate(member);
+        DailyLearningResult today = todaySessionService.findToday(member)
+                .orElseThrow(() -> new IeumException(ErrorCode.TODAY_SESSION_NOT_FOUND));
 
         if (!today.isReadyToComplete()) {
             throw new IeumException(ErrorCode.LEARNING_NOT_COMPLETED);
         }
 
+        today.confirmStreak(resolveConfirmedStreak(member, today));
+
         int goldFromWords = today.getWordsCompleted() * LearningPolicy.GOLD_PER_WORD;
+        int completedDayCount = completedDayCount(member, today);
         int streakBonus = 0;
-        if (Boolean.TRUE.equals(today.getGoldAwarded())) {
+        if (dailyLearningResultRepository.claimGoldAward(today.getId()) == 0) {
             return new CompleteLearningResponse(
                     today.getStreakCount(),
+                    completedDayCount,
                     0,
                     goldFromWords,
                     0,
@@ -72,6 +81,7 @@ public class CompleteLearningService {
 
         return new CompleteLearningResponse(
                 today.getStreakCount(),
+                completedDayCount,
                 goldFromWords + streakBonus,
                 goldFromWords,
                 streakBonus,
@@ -79,5 +89,24 @@ public class CompleteLearningService {
                 today.getWordsCompleted(),
                 today.getSentencesCompleted()
         );
+    }
+
+    private int resolveConfirmedStreak(Member member, DailyLearningResult today) {
+        if (today.getStreakCount() != null && today.getStreakCount() > 0) {
+            return today.getStreakCount();
+        }
+        LocalDate yesterday = today.getLearnedDate().minusDays(1);
+        return dailyLearningResultRepository.findByMemberAndLearnedDate(member, yesterday)
+                .filter(row -> Boolean.TRUE.equals(row.getCompleted()))
+                .map(row -> row.getStreakCount() + 1)
+                .orElse(1);
+    }
+
+    private int completedDayCount(Member member, DailyLearningResult today) {
+        int completedDays = dailyLearningResultRepository.countCompletedByMember(member);
+        if (Boolean.TRUE.equals(today.getCompleted())) {
+            return completedDays;
+        }
+        return completedDays + 1;
     }
 }

@@ -1,7 +1,8 @@
-package org.gh7035.ieumson.domain.progress.presentation.dto.response;
+package org.gh7035.ieumson.domain.study.presentation.dto.response;
 
 public record CompleteLearningResponse(
         int streakCount,
+        int completedDayCount,
         int goldEarned,
         int goldFromWords,
         int streakBonus,

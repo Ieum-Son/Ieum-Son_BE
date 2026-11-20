@@ -1,19 +1,16 @@
-package org.gh7035.ieumson.domain.progress.presentation;
+package org.gh7035.ieumson.domain.study.presentation;
 
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.gh7035.ieumson.domain.progress.presentation.dto.request.SubmitSentenceAnswerRequest;
-import org.gh7035.ieumson.domain.progress.presentation.dto.request.SubmitWordAttemptRequest;
-import org.gh7035.ieumson.domain.progress.presentation.dto.response.CompleteLearningResponse;
-import org.gh7035.ieumson.domain.progress.presentation.dto.response.SentenceAnswerResponse;
-import org.gh7035.ieumson.domain.progress.presentation.dto.response.TodayLearningResponse;
-import org.gh7035.ieumson.domain.progress.presentation.dto.response.WordAttemptResponse;
-import org.gh7035.ieumson.domain.progress.service.CompleteLearningService;
-import org.gh7035.ieumson.domain.progress.service.GetTodayLearningService;
-import org.gh7035.ieumson.domain.progress.service.SubmitSentenceAnswerService;
-import org.gh7035.ieumson.domain.progress.service.SubmitWordAttemptService;
+import org.gh7035.ieumson.domain.study.presentation.dto.request.SubmitSentenceAnswerRequest;
+import org.gh7035.ieumson.domain.study.presentation.dto.response.CompleteLearningResponse;
+import org.gh7035.ieumson.domain.study.presentation.dto.response.SentenceAnswerResponse;
+import org.gh7035.ieumson.domain.study.presentation.dto.response.TodayLearningResponse;
+import org.gh7035.ieumson.domain.study.service.CompleteLearningService;
+import org.gh7035.ieumson.domain.study.service.GetTodayLearningService;
+import org.gh7035.ieumson.domain.study.service.SubmitSentenceAnswerService;
 import org.gh7035.ieumson.global.security.auth.CustomUserDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.security.core.annotation.AuthenticationPrincipal;
@@ -32,26 +29,14 @@ import org.springframework.web.bind.annotation.RestController;
 public class LearningController {
 
     private final GetTodayLearningService getTodayLearningService;
-    private final SubmitWordAttemptService submitWordAttemptService;
     private final SubmitSentenceAnswerService submitSentenceAnswerService;
     private final CompleteLearningService completeLearningService;
 
-    @Operation(summary = "오늘의 학습 세션 조회", description = "하루에 단어 5개 + 문장 빈칸 + 복습을 배정한다. FUNC-006-01/02/03")
-    @GetMapping("/today")
+    @Operation(summary = "오늘 학습 조회", description = "없으면 당일 Day를 만들고 FastAPI 티켓을 발급한다.")
+    @GetMapping("/daily")
     @ResponseStatus(HttpStatus.OK)
-    public TodayLearningResponse getToday(@AuthenticationPrincipal CustomUserDetails userDetails) {
+    public TodayLearningResponse getDaily(@AuthenticationPrincipal CustomUserDetails userDetails) {
         return getTodayLearningService.execute(userDetails);
-    }
-
-    @Operation(summary = "단어 실습 결과 제출", description = "카메라 인식 정확도를 기록한다. 90% 이상이면 다음 단어로 진행. FUNC-006-01/03")
-    @PostMapping("/words/{wordId}/attempts")
-    @ResponseStatus(HttpStatus.OK)
-    public WordAttemptResponse submitWordAttempt(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @PathVariable Long wordId,
-            @RequestBody @Valid SubmitWordAttemptRequest request
-    ) {
-        return submitWordAttemptService.execute(userDetails, wordId, request);
     }
 
     @Operation(summary = "문장 빈칸 답안 제출", description = "수화 영상 보기 중 선택한 단어가 정답인지 채점한다. FUNC-006-02")

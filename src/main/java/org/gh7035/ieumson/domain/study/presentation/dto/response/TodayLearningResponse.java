@@ -1,4 +1,4 @@
-package org.gh7035.ieumson.domain.progress.presentation.dto.response;
+package org.gh7035.ieumson.domain.study.presentation.dto.response;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
@@ -6,7 +6,11 @@ import java.util.List;
 
 public record TodayLearningResponse(
         LocalDate date,
+        Long sessionId,
+        String sessionTicket,
+        LocalDateTime expiresAt,
         int streakCount,
+        int completedDayCount,
         boolean completed,
         boolean goldAwarded,
         LearningStep step,

@@ -1,11 +1,11 @@
-package org.gh7035.ieumson.domain.progress.service;
+package org.gh7035.ieumson.domain.study.service;
 
 import lombok.RequiredArgsConstructor;
 import org.gh7035.ieumson.domain.member.domain.Member;
 import org.gh7035.ieumson.domain.member.service.CurrentMemberFinder;
 import org.gh7035.ieumson.domain.progress.domain.DailyLearningResult;
-import org.gh7035.ieumson.domain.progress.presentation.dto.request.SubmitSentenceAnswerRequest;
-import org.gh7035.ieumson.domain.progress.presentation.dto.response.SentenceAnswerResponse;
+import org.gh7035.ieumson.domain.study.presentation.dto.request.SubmitSentenceAnswerRequest;
+import org.gh7035.ieumson.domain.study.presentation.dto.response.SentenceAnswerResponse;
 import org.gh7035.ieumson.domain.study.domain.Sentence;
 import org.gh7035.ieumson.domain.study.domain.repository.SentenceRepository;
 import org.gh7035.ieumson.global.error.exception.ErrorCode;
@@ -25,7 +25,8 @@ public class SubmitSentenceAnswerService {
 
     public SentenceAnswerResponse execute(CustomUserDetails userDetails, Long sentenceId, SubmitSentenceAnswerRequest request) {
         Member member = currentMemberFinder.get(userDetails);
-        DailyLearningResult today = todaySessionService.getOrCreate(member);
+        DailyLearningResult today = todaySessionService.findToday(member)
+                .orElseThrow(() -> new IeumException(ErrorCode.TODAY_SESSION_NOT_FOUND));
         Sentence sentence = sentenceRepository.findById(sentenceId)
                 .orElseThrow(() -> new IeumException(ErrorCode.SENTENCE_NOT_FOUND));
 
