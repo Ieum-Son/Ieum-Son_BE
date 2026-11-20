@@ -10,9 +10,6 @@ import org.gh7035.ieumson.domain.auth.presentation.dto.request.*;
 import org.gh7035.ieumson.domain.auth.presentation.dto.response.ProfileImageResponse;
 import org.gh7035.ieumson.domain.auth.presentation.dto.response.TokenResponse;
 import org.gh7035.ieumson.domain.auth.service.*;
-import org.gh7035.ieumson.domain.member.presentation.dto.request.UpdateNameRequest;
-import org.gh7035.ieumson.domain.member.presentation.dto.response.ProfileResponse;
-import org.gh7035.ieumson.domain.member.service.UpdateNameService;
 import org.gh7035.ieumson.global.security.auth.CustomUserDetails;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
@@ -33,7 +30,6 @@ public class AuthController {
     private final VerifyCodeService verifyCodeService;
     private final LogoutService logoutService;
     private final DeleteAccountService deleteAccountService;
-    private final UpdateNameService updateNameService;
 
     @Operation(summary = "회원가입", description = "이메일 인증 완료 후 프로필 이미지와 함께 가입한다. FUNC-008, FUNT-008-01")
     @SecurityRequirements
@@ -93,16 +89,6 @@ public class AuthController {
             @RequestBody @Valid DeleteAccountRequest request
     ) {
         deleteAccountService.execute(userDetails, request);
-    }
-
-    @Operation(summary = "이름 재설정", description = "FUNC-007-02")
-    @PatchMapping("/rename")
-    @ResponseStatus(HttpStatus.OK)
-    public ProfileResponse rename(
-            @AuthenticationPrincipal CustomUserDetails userDetails,
-            @RequestBody @Valid UpdateNameRequest request
-    ) {
-        return updateNameService.execute(userDetails, request);
     }
 
     private String extractClientIp(HttpServletRequest request) {

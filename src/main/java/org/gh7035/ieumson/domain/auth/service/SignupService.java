@@ -8,7 +8,7 @@ import org.gh7035.ieumson.domain.member.domain.enums.Role;
 import org.gh7035.ieumson.domain.member.domain.repository.MemberRepository;
 import org.gh7035.ieumson.global.error.exception.ErrorCode;
 import org.gh7035.ieumson.global.error.exception.IeumException;
-import org.gh7035.ieumson.infrastructure.s3.S3FileUploader;
+import org.gh7035.ieumson.infrastructure.s3.S3FileManager;
 import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.data.redis.core.StringRedisTemplate;
 import org.springframework.security.crypto.password.PasswordEncoder;
@@ -29,7 +29,7 @@ public class SignupService {
     private final MemberValidator memberValidator;
     private final PasswordEncoder passwordEncoder;
     private final StringRedisTemplate stringRedisTemplate;
-    private final S3FileUploader s3FileUploader;
+    private final S3FileManager s3FileManager;
 
     private static final String VERIFIED_KEY_PREFIX = "auth:signup:verified:";
 
@@ -43,7 +43,7 @@ public class SignupService {
             throw new IeumException(ErrorCode.EMAIL_VERIFICATION_REQUIRED);
         }
 
-        String profileImageUrl = s3FileUploader.uploadProfileImage(request.loginId(), image);
+        String profileImageUrl = s3FileManager.uploadProfileImage(request.loginId(), image);
 
         try {
             memberRepository.saveAndFlush(Member.builder()
@@ -56,7 +56,7 @@ public class SignupService {
                     .role(Role.USER)
                     .build());
         } catch (DataIntegrityViolationException e) {
-            s3FileUploader.deleteIfOwned(profileImageUrl);
+            s3FileManager.deleteIfOwned(profileImageUrl);
             String message = String.valueOf(e.getMostSpecificCause().getMessage())
                     .toLowerCase(Locale.ROOT);
             if (message.contains("login_id")) {
@@ -67,7 +67,7 @@ public class SignupService {
             }
             throw new IeumException(ErrorCode.DUPLICATE_ENTRY, e);
         } catch (RuntimeException e) {
-            s3FileUploader.deleteIfOwned(profileImageUrl);
+            s3FileManager.deleteIfOwned(profileImageUrl);
             throw e;
         }
 
