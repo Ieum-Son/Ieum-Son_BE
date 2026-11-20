@@ -51,6 +51,7 @@ public class LoginService {
         }
 
         Member member = memberRepository.findByLoginId(request.loginId())
+                .or(() -> memberRepository.findByEmail(request.loginId()))
                 .orElseThrow(() -> new IeumException(ErrorCode.LOGIN_FAILED));
 
         if (!passwordEncoder.matches(request.password(), member.getPassword())) {

@@ -6,6 +6,8 @@ public record ProfileResponse(
         String loginId,
         String profileImageUrl,
         int gold,
-        int streakCount
+        int streakCount,
+        int longestStreakCount,
+        int monthStudyCount
 ) {
 }
