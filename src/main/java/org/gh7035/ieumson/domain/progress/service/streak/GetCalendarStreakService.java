@@ -1,4 +1,4 @@
-package org.gh7035.ieumson.domain.progress.service;
+package org.gh7035.ieumson.domain.progress.service.streak;
 
 import lombok.RequiredArgsConstructor;
 import org.gh7035.ieumson.domain.member.domain.Member;
@@ -26,10 +26,10 @@ public class GetCalendarStreakService {
 
     private final CurrentMemberFinder currentMemberFinder;
     private final DailyLearningResultRepository dailyLearningResultRepository;
-    private final GetStreakSummaryService getStreakSummaryService;
 
     public CalendarStreakResponse execute(CustomUserDetails userDetails, Integer year, Integer month) {
         Member member = currentMemberFinder.get(userDetails);
+
         LocalDate today = LocalDate.now(LearningPolicy.ZONE);
         YearMonth yearMonth = (year == null || month == null)
                 ? YearMonth.from(today)
@@ -49,14 +49,11 @@ public class GetCalendarStreakService {
                     int sentences = day == null ? 0 : day.getSentencesCompleted();
                     return new CalendarDayResponse(
                             date,
-                            words,
-                            sentences,
                             LearningPolicy.calendarIntensity(words, sentences)
                     );
                 })
                 .toList();
 
-        int currentStreak = getStreakSummaryService.execute(userDetails).currentStreak();
-        return new CalendarStreakResponse(yearMonth.getYear(), yearMonth.getMonthValue(), currentStreak, days);
+        return new CalendarStreakResponse(yearMonth.getYear(), yearMonth.getMonthValue(), days);
     }
 }

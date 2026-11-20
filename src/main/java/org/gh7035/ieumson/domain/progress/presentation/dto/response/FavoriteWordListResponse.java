@@ -1,5 +1,6 @@
 package org.gh7035.ieumson.domain.progress.presentation.dto.response;
 
+import java.time.LocalDateTime;
 import java.util.List;
 
 public record FavoriteWordListResponse(
@@ -8,7 +9,7 @@ public record FavoriteWordListResponse(
     public record FavoriteWordResponse(
             Long wordId,
             String word,
-            String definition,
+            LocalDateTime recentLearnedDate, // todo recentLearnedDate (2026.07.04)
             String videoUrl,
             String category
     ) {

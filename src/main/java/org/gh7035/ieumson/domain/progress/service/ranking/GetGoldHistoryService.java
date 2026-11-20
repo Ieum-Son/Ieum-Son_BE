@@ -1,4 +1,4 @@
-package org.gh7035.ieumson.domain.progress.service;
+package org.gh7035.ieumson.domain.progress.service.ranking;
 
 import lombok.RequiredArgsConstructor;
 import org.gh7035.ieumson.domain.member.domain.Member;
